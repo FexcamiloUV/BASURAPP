@@ -8,6 +8,10 @@
 <ion-content>
 <img src="assets/imagenes/BasurApp.png">
 <form [formGroup]="formularioRegistro" >
+  <ion-item>
+      <ion-label position="floating">Nombre</ion-label>
+      <ion-input type="text" formControlName="name"></ion-input>
+    </ion-item>
     <ion-item>
       <ion-label position="floating">Correo Electrónico</ion-label>
       <ion-input type="email" formControlName="email"></ion-input>
@@ -16,10 +20,6 @@
       <ion-label position="floating">Contraseña</ion-label>
       <ion-input type="password" formControlName="password"></ion-input>
     </ion-item>
-    <ion-item>
-      <ion-label position="floating">Confirmar Contraseña</ion-label>
-      <ion-input type="password" formControlName="confirmarPassword"></ion-input>
-    </ion-item>
 </form>
+  <ion-button expand="full" class="colorAzul" (click)="register()">Registrarse</ion-button>
 </ion-content>
-<ion-button expand="full" class="colorAzul" routerLink="/login">Registrarse</ion-button>
