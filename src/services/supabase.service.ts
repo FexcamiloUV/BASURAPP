@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from 'src/environments/environment';
 
-interface Ruta {
+export interface Ruta {
   id?: string;
   nombre: string;
   descripcion?: string;
@@ -51,5 +51,19 @@ export class SupabaseService {
       .update(ruta)
       .eq('id', id)
       .select();
+  }
+  // Un solo método para obtener rutas activas
+  async obtenerRutasActivas(): Promise<{ data: Ruta[] | null; error: any }> {
+    try {
+      const { data, error } = await this.supabase
+        .from('rutas')
+        .select('*')
+        .eq('activa', true)
+        .order('creado_en', { ascending: false });
+
+      return { data: data as Ruta[], error };
+    } catch (error) {
+      return { data: null, error };
+    }
   }
 }

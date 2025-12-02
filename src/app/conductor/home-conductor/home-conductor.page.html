@@ -1,13 +1,181 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>home-conductor</ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>
+      <ion-icon name="car" slot="start"></ion-icon>
+      Conductor - Simulador de Rutas
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">home-conductor</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <!-- Mapa principal -->
+  <div class="mapa">
+    <div id="mapId" style="height: 100vh; width: 100%;"></div>
+  </div>
+  
+  <!-- Controles flotantes superiores -->
+  <div class="controles-superiores">
+    <ion-button (click)="centrarEnUbicacionActual()" color="light" class="boton-control" 
+                [disabled]="recorridoActivo">
+      <ion-icon name="location" slot="icon-only"></ion-icon>
+    </ion-button>
+    
+    <ion-button (click)="recargarRutas()" color="light" class="boton-control" 
+                [disabled]="cargandoRutas || recorridoActivo">
+      <ion-icon name="refresh" slot="icon-only"></ion-icon>
+      <ion-spinner *ngIf="cargandoRutas" class="spinner-tiny"></ion-spinner>
+    </ion-button>
+    
+    <ion-button *ngIf="!mostrarPanelSeleccion && !recorridoActivo" 
+                (click)="togglePanelSeleccion()" color="primary" class="boton-control">
+      <ion-icon name="eye" slot="icon-only"></ion-icon>
+    </ion-button>
+  </div>
+  
+  <!-- Panel de selección de ruta -->
+  <div class="panel-seleccion" *ngIf="mostrarPanelSeleccion && !recorridoActivo">
+    <div class="seleccion-content">
+      <div class="panel-header">
+        <h4>
+          <ion-icon name="car" class="header-icon"></ion-icon>
+          Seleccionar Ruta
+        </h4>
+        <ion-button fill="clear" size="small" (click)="togglePanelSeleccion()">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </div>
+      
+      <div class="ruta-select-container">
+        <ion-select 
+          label="Rutas disponibles" 
+          placeholder="Elige una ruta para simular"
+          (ionChange)="seleccionarRuta($event)"
+          interface="action-sheet"
+          class="ruta-select"
+        >
+          <ion-select-option *ngFor="let ruta of rutasDisponibles" [value]="ruta.id">
+            {{ ruta.nombre }}
+          </ion-select-option>
+        </ion-select>
+      </div>
+      
+      <div class="ruta-info" *ngIf="rutaSeleccionada">
+        <div class="info-header">
+          <h5>{{ rutaSeleccionada.nombre }}</h5>
+          <span class="ruta-status active">Activa</span>
+        </div>
+        
+        <p class="ruta-descripcion">{{ rutaSeleccionada.descripcion || 'Sin descripción' }}</p>
+        
+        <div class="ruta-stats">
+          <div class="stat-item">
+            <ion-icon name="navigate"></ion-icon>
+            <div class="stat-content">
+              <div class="stat-value">{{ distanciaTotal.toFixed(2) }} km</div>
+              <div class="stat-label">Distancia total</div>
+            </div>
+          </div>
+          
+          <div class="stat-item">
+            <ion-icon name="locate"></ion-icon>
+            <div class="stat-content">
+              <div class="stat-value">{{ puntosRecorrido.length }}</div>
+              <div class="stat-label">Puntos de ruta</div>
+            </div>
+          </div>
+          
+        </div>
+        
+        <div class="acciones-ruta">
+          <ion-button (click)="iniciarRecorrido()" color="success" expand="block" 
+                     [disabled]="!rutaSeleccionada || puntosRecorrido.length < 2">
+            <ion-icon name="play" slot="start"></ion-icon>
+            Iniciar Simulación
+          </ion-button>
+        </div>
+      </div>
+      
+      <div class="sin-ruta" *ngIf="!rutaSeleccionada && rutasDisponibles.length > 0">
+        <div class="empty-state">
+          <ion-icon name="car-outline"></ion-icon>
+          <p>Selecciona una ruta para comenzar la simulación</p>
+        </div>
+      </div>
+      
+      <div class="sin-rutas" *ngIf="rutasDisponibles.length === 0">
+        <div class="empty-state">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <p>No hay rutas disponibles</p>
+          <small>Espera a que el administrador cree rutas</small>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Controles durante la simulación -->
+  <div class="controles-simulacion" *ngIf="recorridoActivo">
+    <div class="simulacion-header">
+      <h5>
+        <ion-icon name="car" class="simulacion-icon"></ion-icon>
+        Simulación en curso
+      </h5>
+      <div class="simulacion-status" [class.pausado]="recorridoPausado">
+        {{ recorridoPausado ? 'PAUSADO' : 'EN CURSO' }}
+      </div>
+    </div>
+    
+    <div class="simulacion-info">
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Progreso</div>
+          <div class="info-value">{{ progreso.toFixed(1) }}%</div>
+          <div class="progress-container">
+            <div class="progress-bar" [style.width.%]="progreso"></div>
+          </div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Distancia</div>
+          <div class="info-value">{{ distanciaRecorrida.toFixed(2) }} km</div>
+          <div class="info-sub">de {{ distanciaTotal.toFixed(2) }} km</div>
+        </div>
+        
+        <div class="info-item">
+          <div class="info-label">Puntos</div>
+          <div class="info-value">{{ indiceRecorrido + 1 }}/{{ puntosRecorrido.length }}</div>
+          <div class="info-sub">recorridos</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="simulacion-controles">
+      <ion-button (click)="pausarRecorrido()" color="warning" class="control-btn">
+        <ion-icon [name]="recorridoPausado ? 'play' : 'pause'" slot="icon-only"></ion-icon>
+      </ion-button>
+      
+      <ion-button (click)="detenerRecorrido()" color="danger" class="control-btn">
+        <ion-icon name="stop" slot="icon-only"></ion-icon>
+      </ion-button>
+      
+      <ion-button (click)="centrarEnUbicacionActual()" color="light" class="control-btn">
+        <ion-icon name="locate" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+  
+  <!-- Botón para mostrar panel cuando está oculto -->
+  <div class="boton-panel" *ngIf="!mostrarPanelSeleccion && !recorridoActivo">
+    <ion-button (click)="togglePanelSeleccion()" color="primary" class="panel-toggle">
+      <ion-icon name="car" slot="start"></ion-icon>
+      Ver Rutas
+    </ion-button>
+  </div>
+  
+  <!-- Loading overlay -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="loading-content">
+      <ion-spinner class="spinner-large"></ion-spinner>
+      <p>Cargando mapa...</p>
+    </div>
+  </div>
 </ion-content>
