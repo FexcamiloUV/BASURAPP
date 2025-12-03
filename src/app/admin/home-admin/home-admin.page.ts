@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonList, IonItem, IonLabel, IonIcon, IonSpinner } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonList, IonItem, IonLabel, IonIcon, IonSpinner, IonItemOption, IonItemSliding, IonItemOptions } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { trash, save, location, download, eye, eyeOff } from 'ionicons/icons';
 
@@ -36,7 +36,7 @@ interface Ruta {
   templateUrl: './home-admin.page.html',
   styleUrls: ['./home-admin.page.scss'],
   standalone: true,
-  imports: [
+  imports: [IonItemOptions, IonItemSliding, IonItemOption, 
     CommonModule,
     FormsModule,
     IonContent,

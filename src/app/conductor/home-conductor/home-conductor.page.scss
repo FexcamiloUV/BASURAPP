@@ -1,493 +1,174 @@
-.mapa {
-  position: relative;
+// Color de fondo base
+ion-content {
+  --background: #f2f4f8;
+}
+
+// 1. EL MAPA: Ocupa todo el espacio detrás
+.map-container {
   width: 100%;
   height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1; // Nivel más bajo
 }
 
-// Controles superiores
-.controles-superiores {
+// 2. PANELES FLOTANTES (Estilos compartidos)
+.control-panel {
   position: absolute;
-  top: 70px;
-  right: 16px;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  
-  .boton-control {
-    --border-radius: 50%;
-    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    width: 44px;
-    height: 44px;
-    
-    ion-icon {
-      font-size: 20px;
-    }
-    
-    &:disabled {
-      opacity: 0.5;
-    }
-  }
-  
-  .spinner-tiny {
-    width: 16px;
-    height: 16px;
-    --color: white;
-  }
-}
-
-// Panel de selección de ruta
-.panel-seleccion {
-  position: absolute;
-  top: 70px;
-  left: 16px;
-  right: 16px;
-  background: white;
+  bottom: 25px;
+  left: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.95); // Fondo casi opaco
+  backdrop-filter: blur(10px); // Efecto desenfoque moderno
   border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  max-width: 500px;
-  animation: slideIn 0.3s ease-out;
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.95);
-  
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .seleccion-content {
-    padding: 20px;
-    
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      
-      h4 {
-        margin: 0;
-        color: #2c3e50;
-        font-weight: 600;
-        font-size: 18px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      
-      .header-icon {
-        color: #3880ff;
-        font-size: 20px;
-      }
-    }
-    
-    .ruta-select-container {
-      margin-bottom: 20px;
-      
-      .ruta-select {
-        width: 100%;
-        --border-radius: 12px;
-        --background: #f8f9fa;
-        --border-color: #e0e0e0;
-        --padding-start: 16px;
-        --padding-end: 16px;
-      }
-    }
-    
-    .ruta-info {
-      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 16px;
-      border: 1px solid #e0e0e0;
-      
-      .info-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 12px;
-        
-        h5 {
-          margin: 0;
-          color: #2c3e50;
-          font-size: 16px;
-          font-weight: 600;
-          flex: 1;
-        }
-        
-        .ruta-status {
-          background: #2dd36f;
-          color: white;
-          padding: 4px 12px;
-          border-radius: 20px;
-          font-size: 12px;
-          font-weight: 600;
-          
-          &.active {
-            background: #2dd36f;
-          }
-        }
-      }
-      
-      .ruta-descripcion {
-        margin: 0 0 20px 0;
-        font-size: 14px;
-        color: #666;
-        line-height: 1.5;
-      }
-      
-      .ruta-stats {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-        margin-bottom: 24px;
-        
-        .stat-item {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          
-          ion-icon {
-            font-size: 20px;
-            color: #3880ff;
-            background: white;
-            padding: 8px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          }
-          
-          .stat-content {
-            .stat-value {
-              font-size: 16px;
-              font-weight: 700;
-              color: #2c3e50;
-              margin-bottom: 2px;
-            }
-            
-            .stat-label {
-              font-size: 11px;
-              color: #888;
-              text-transform: uppercase;
-              letter-spacing: 0.5px;
-            }
-          }
-        }
-      }
-      
-      .acciones-ruta {
-        ion-button {
-          --border-radius: 12px;
-          --box-shadow: 0 4px 16px rgba(56, 128, 255, 0.3);
-          height: 48px;
-          font-weight: 600;
-          font-size: 14px;
-          
-          ion-icon {
-            font-size: 18px;
-          }
-          
-          &:disabled {
-            opacity: 0.6;
-          }
-        }
-      }
-    }
-    
-    .sin-ruta, .sin-rutas {
-      .empty-state {
-        text-align: center;
-        padding: 40px 20px;
-        
-        ion-icon {
-          font-size: 48px;
-          color: #bdc3c7;
-          margin-bottom: 16px;
-        }
-        
-        p {
-          margin: 0 0 8px 0;
-          color: #666;
-          font-weight: 500;
-        }
-        
-        small {
-          font-size: 12px;
-          color: #888;
-        }
-      }
-    }
-  }
-}
+  padding: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); // Sombra suave
+  z-index: 100; // Por encima del mapa
+  transition: all 0.3s ease;
+  max-width: 600px; // Evita que sea muy ancho en tablets
+  margin: 0 auto; // Centrado horizontal si sobra espacio
 
-// Controles durante la simulación
-.controles-simulacion {
-  position: absolute;
-  bottom: 20px;
-  left: 16px;
-  right: 16px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  animation: slideUp 0.3s ease-out;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .simulacion-header {
+  // Encabezado del panel
+  .panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 20px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    
-    h5 {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 10px;
+
+    h3 {
       margin: 0;
-      color: #2c3e50;
-      font-size: 16px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .simulacion-icon {
-      color: #3880ff;
-      font-size: 18px;
-    }
-    
-    .simulacion-status {
-      background: #2dd36f;
-      color: white;
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 12px;
+      font-size: 1.2rem;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      
-      &.pausado {
-        background: #ffc409;
-      }
+      color: #333;
     }
   }
-  
-  .simulacion-info {
-    padding: 20px;
+}
+
+// Estilos específicos para el panel de Selección
+.selection-panel {
+  .select-item {
+    --background: transparent;
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    margin-bottom: 10px;
+  }
+
+  .route-info {
+    margin-top: 10px;
     
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      
-      .info-item {
-        text-align: center;
-        
-        .info-label {
-          font-size: 12px;
-          color: #666;
-          margin-bottom: 8px;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          font-weight: 500;
-        }
-        
-        .info-value {
-          font-size: 20px;
-          font-weight: 700;
-          color: #2c3e50;
-          margin-bottom: 4px;
-        }
-        
-        .info-sub {
-          font-size: 11px;
-          color: #888;
-        }
-        
-        .progress-container {
-          height: 6px;
-          background: #e9ecef;
-          border-radius: 3px;
-          overflow: hidden;
-          margin-top: 8px;
-          
-          .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #2dd36f, #3880ff);
-            border-radius: 3px;
-            transition: width 0.3s ease;
-          }
-        }
-      }
+    p {
+      margin: 8px 0;
+      color: #555;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .start-btn {
+      margin-top: 20px;
+      --border-radius: 12px;
+      font-weight: 600;
+      --box-shadow: 0 4px 10px rgba(var(--ion-color-success-rgb), 0.3);
     }
   }
-  
-  .simulacion-controles {
+}
+
+// 3. PANELES EN MODO CONDUCCIÓN/SIMULACIÓN
+.driving-panel {
+  // Cuadrícula de estadísticas (Progreso / Km)
+  .stats-grid {
     display: flex;
-    justify-content: center;
-    gap: 20px;
-    padding: 0 20px 20px 20px;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 15px;
+
+    .stat-item {
+      text-align: center;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+
+      .label {
+        font-size: 0.8rem;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 5px;
+      }
+      .value {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--ion-color-dark);
+      }
+    }
+  }
+
+  // Barra de progreso visual
+  .progress-bar-container {
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 25px;
+    overflow: hidden;
+
+    .progress-fill {
+      height: 100%;
+      background: var(--ion-color-success);
+      transition: width 0.3s linear; // Movimiento suave
+    }
+  }
+
+  // Botones de control (Pausar / Detener)
+  .controls-row {
+    display: flex;
+    gap: 15px;
     
-    .control-btn {
-      --border-radius: 50%;
-      --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-      width: 56px;
-      height: 56px;
-      
-      ion-icon {
-        font-size: 24px;
-      }
-      
-      &:first-child {
-        animation: pulse 2s infinite;
-        
-        @keyframes pulse {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.1); }
-          100% { transform: scale(1); }
-        }
-      }
+    ion-button {
+      flex: 1;
+      --border-radius: 12px;
+      height: 45px;
+      font-weight: 600;
     }
   }
 }
 
-// Botón para mostrar panel
-.boton-panel {
+// 4. BOTÓN FLOTANTE (Ubicación)
+.fab-center {
   position: absolute;
-  top: 70px;
-  left: 16px;
-  z-index: 1000;
-  animation: slideInLeft 0.3s ease-out;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  width: 45px;
+  height: 45px;
+  --box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   
-  @keyframes slideInLeft {
-    from {
-      opacity: 0;
-      transform: translateX(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-  
-  .panel-toggle {
-    --border-radius: 25px;
-    --box-shadow: 0 4px 16px rgba(56, 128, 255, 0.3);
-    font-weight: 600;
-    padding: 0 20px;
-    
-    ion-icon {
-      font-size: 18px;
-    }
+  ion-icon {
+    font-size: 24px;
+    color: var(--ion-color-primary);
   }
 }
 
-// Loading overlay
+// 5. PANTALLA DE CARGA
 .loading-overlay {
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.95);
-  z-index: 2000;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  z-index: 200;
   
-  .loading-content {
-    text-align: center;
-    background: white;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    
-    p {
-      margin: 20px 0 0 0;
-      color: #2c3e50;
-      font-weight: 600;
-      font-size: 16px;
-    }
+  p {
+    margin-top: 15px;
+    color: #666;
+    font-weight: 500;
   }
-}
-
-.spinner-large {
-  width: 48px;
-  height: 48px;
-  --color: #3880ff;
-}
-
-// Responsive
-@media (max-width: 768px) {
-  .controles-superiores {
-    top: 60px;
-    right: 8px;
-  }
-  
-  .panel-seleccion {
-    top: 60px;
-    left: 8px;
-    right: 8px;
-    max-width: none;
-    
-    .seleccion-content {
-      padding: 16px;
-      
-      .ruta-stats {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-    }
-  }
-  
-  .controles-simulacion {
-    bottom: 8px;
-    left: 8px;
-    right: 8px;
-    
-    .simulacion-info {
-      .info-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-    }
-    
-    .simulacion-controles {
-      gap: 12px;
-    }
-  }
-  
-  .boton-panel {
-    top: 60px;
-    left: 8px;
-  }
-}
-
-// Icono del carro SVG
-.car-icon {
-  width: 32px;
-  height: 32px;
-  fill: #3880ff;
-}
-
-// Estado deshabilitado
-:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }

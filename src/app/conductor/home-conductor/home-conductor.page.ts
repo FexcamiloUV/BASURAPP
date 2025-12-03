@@ -90,7 +90,7 @@ export class HomeConductorPage implements OnInit, AfterViewInit {
   private intervaloRecorrido: any;
   public puntosRecorrido: any[] = [];
   public indiceRecorrido: number = 0;
-  private velocidad: number = 300; // ms entre puntos (más lento para mejor visualización)
+  private velocidad: number = 300; // ms entre puntos
   private carroFeature: Feature | null = null;
   
   // Estadísticas del recorrido
@@ -128,7 +128,8 @@ export class HomeConductorPage implements OnInit, AfterViewInit {
     });
     
     this.carroLayer = new VectorLayer({
-      source: new VectorSource()
+      source: new VectorSource(),
+      zIndex: 100 // Asegurar que esté por encima de otras capas
     });
     
     this.rutaSeleccionadaLayer = new VectorLayer({
@@ -197,6 +198,12 @@ export class HomeConductorPage implements OnInit, AfterViewInit {
         center: fromLonLat([lng, lat]),
         zoom: 15,
       }),
+    });
+
+    // Listener para debug
+    this.carroLayer.getSource().on('addfeature', (event: { feature: { getGeometry: () => any; }; }) => {
+      console.log('✅ Feature de carro añadido:', event.feature);
+      console.log('Geometría del feature:', event.feature.getGeometry());
     });
   }
 
@@ -300,6 +307,8 @@ export class HomeConductorPage implements OnInit, AfterViewInit {
       this.distanciaRecorrida = 0;
       this.distanciaTotal = this.calcularDistanciaTotal(this.puntosRecorrido);
       console.log('📐 Puntos del recorrido:', this.puntosRecorrido.length);
+      console.log('Primer punto:', this.puntosRecorrido[0]);
+      console.log('Último punto:', this.puntosRecorrido[this.puntosRecorrido.length - 1]);
     }
   }
 
@@ -332,6 +341,50 @@ export class HomeConductorPage implements OnInit, AfterViewInit {
     return degrees * (Math.PI / 180);
   }
 
+  // Método para crear el carro con SVG inline - CORREGIDO
+  private crearObjetoCarro(lng: number, lat: number): void {
+    // Verificar coordenadas
+    console.log('🚗 Creando carro en:', { lng, lat });
+    
+    if (!lng || !lat) {
+      console.error('❌ Coordenadas inválidas para crear el carro');
+      return;
+    }
+    
+    // Crear icono del carro
+    const carIcon = new Icon({
+      src:
+        "data:image/svg+xml;utf8," +
+        encodeURIComponent(`
+        <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="12" width="24" height="10" rx="2" fill="#3880ff" stroke="#000" stroke-width="1"/>
+          <circle cx="10" cy="24" r="3" fill="#333"/>
+          <circle cx="22" cy="24" r="3" fill="#333"/>
+          <rect x="8" y="8" width="16" height="4" fill="#3880ff" stroke="#000" stroke-width="1"/>
+          <rect x="12" y="14" width="8" height="4" fill="#fff" stroke="#000" stroke-width="0.5"/>
+        </svg>
+      `),
+      scale: 1.5, // Aumentado para mejor visibilidad
+      anchor: [0.5, 0.5],
+      rotateWithView: true
+    });
+
+    // Crear feature con la posición correcta
+    const startPoint = new Point(fromLonLat([lng, lat]));
+    this.carroFeature = new Feature({
+      geometry: startPoint,
+      name: "carro",
+    });
+
+    this.carroFeature.setStyle(new Style({ image: carIcon }));
+    
+    // Limpiar capa y agregar el carro
+    this.carroLayer.getSource().clear();
+    this.carroLayer.getSource().addFeature(this.carroFeature);
+    
+    console.log('✅ Carro creado con geometría:', this.carroFeature.getGeometry());
+  }
+
   iniciarRecorrido() {
     if (!this.rutaSeleccionada || this.recorridoActivo) return;
     
@@ -344,27 +397,39 @@ export class HomeConductorPage implements OnInit, AfterViewInit {
     this.recorridoPausado = false;
     this.mostrarPanelSeleccion = false;
     
-    // Crear feature del carro
+    // Obtener primer punto
     const [startLng, startLat] = this.puntosRecorrido[0];
-    this.carroFeature = new Feature({
-      geometry: new Point(fromLonLat([startLng, startLat]))
-    });
     
-    // Crear estilo del carro
-    const carStyle = new Style({
-      image: new Icon({
-        src: 'assets/icon/car.svg',
-        scale: 0.8,
-        anchor: [0.5, 0.5],
-        rotateWithView: true
-      })
-    });
+    // Verificar coordenadas del primer punto
+    console.log('🎬 Iniciando recorrido en:', { startLng, startLat });
     
-    this.carroFeature.setStyle(carStyle);
+    // Crear feature del carro en la posición correcta - CORREGIDO
+    this.crearObjetoCarro(startLng, startLat);
     
-    // Limpiar y agregar el carro
-    this.carroLayer.getSource().clear();
-    this.carroLayer.getSource().addFeature(this.carroFeature);
+    // Forzar actualización y verificar
+    this.carroLayer.changed();
+    
+    // Verificar que el carro se agregó
+    setTimeout(() => {
+      const features = this.carroLayer.getSource().getFeatures();
+      console.log('🔍 Verificación - Features en carroLayer:', features.length);
+      
+      if (features.length > 0) {
+        const feature = features[0];
+        const geometry = feature.getGeometry();
+        if (geometry) {
+          console.log('✅ Geometría del carro:', geometry.getCoordinates());
+        } else {
+          console.error('❌ El feature no tiene geometría');
+        }
+        
+        // Verificar estilo
+        const style = feature.getStyle();
+        console.log('🎨 Estilo del carro:', style ? 'Presente' : 'Ausente');
+      } else {
+        console.error('❌ No hay features en la capa del carro');
+      }
+    }, 100);
     
     // Centrar en el inicio de la ruta
     this.map?.getView().animate({
@@ -372,8 +437,6 @@ export class HomeConductorPage implements OnInit, AfterViewInit {
       zoom: 16,
       duration: 1000
     });
-    
-    console.log('🚗 Recorrido iniciado en:', { startLng, startLat });
     
     // Iniciar intervalo del recorrido
     this.intervaloRecorrido = setInterval(() => {
@@ -416,6 +479,7 @@ export class HomeConductorPage implements OnInit, AfterViewInit {
     // Reiniciar estadísticas
     this.progreso = 0;
     this.distanciaRecorrida = 0;
+    this.indiceRecorrido = 0;
     
     // Volver a mostrar la ruta seleccionada
     this.cargarRutaSeleccionadaEnMapa();
@@ -432,6 +496,8 @@ export class HomeConductorPage implements OnInit, AfterViewInit {
     this.indiceRecorrido++;
     
     const [lon, lat] = this.puntosRecorrido[this.indiceRecorrido];
+    console.log(`📍 Moviendo carro a punto ${this.indiceRecorrido}:`, { lon, lat });
+    
     const point = new Point(fromLonLat([lon, lat]));
     this.carroFeature.setGeometry(point);
     
@@ -440,18 +506,28 @@ export class HomeConductorPage implements OnInit, AfterViewInit {
       const [prevLon, prevLat] = this.puntosRecorrido[this.indiceRecorrido - 1];
       const angle = this.calcularAngulo(prevLon, prevLat, lon, lat);
       
-      // Actualizar estilo con nueva rotación
-      const carStyle = new Style({
-        image: new Icon({
-          src: 'assets/icon/car.svg',
-          scale: 0.8,
-          anchor: [0.5, 0.5],
-          rotateWithView: true,
-          rotation: angle
-        })
+      console.log(`🎯 Ángulo de rotación: ${(angle * 180 / Math.PI).toFixed(1)}°`);
+      
+      // Crear nuevo icono con la rotación aplicada
+      const carIcon = new Icon({
+        src:
+          "data:image/svg+xml;utf8," +
+          encodeURIComponent(`
+          <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="12" width="24" height="10" rx="2" fill="#3880ff" stroke="#000" stroke-width="1"/>
+            <circle cx="10" cy="24" r="3" fill="#333"/>
+            <circle cx="22" cy="24" r="3" fill="#333"/>
+            <rect x="8" y="8" width="16" height="4" fill="#3880ff" stroke="#000" stroke-width="1"/>
+            <rect x="12" y="14" width="8" height="4" fill="#fff" stroke="#000" stroke-width="0.5"/>
+          </svg>
+        `),
+        scale: 1.5,
+        anchor: [0.5, 0.5],
+        rotateWithView: true,
+        rotation: angle
       });
       
-      this.carroFeature.setStyle(carStyle);
+      this.carroFeature.setStyle(new Style({ image: carIcon }));
     }
     
     // Actualizar estadísticas
@@ -460,8 +536,9 @@ export class HomeConductorPage implements OnInit, AfterViewInit {
       this.puntosRecorrido.slice(0, this.indiceRecorrido + 1)
     );
     
-    // Actualizar el source para forzar re-render
+    // Forzar actualización del render - IMPORTANTE
     this.carroLayer.getSource().refresh();
+    this.carroLayer.changed();
     
     // Seguir al carro con el mapa
     const view = this.map?.getView();
@@ -469,10 +546,15 @@ export class HomeConductorPage implements OnInit, AfterViewInit {
     
     view?.animate({
       center: carPosition,
-      duration: 500
+      duration: 500,
+      zoom: 16
     });
     
-    console.log(`📍 Carro en posición ${this.indiceRecorrido + 1}/${this.puntosRecorrido.length}:`, { lon, lat });
+    console.log(`📍 Carro en posición ${this.indiceRecorrido + 1}/${this.puntosRecorrido.length}:`, { 
+      lon, lat,
+      progreso: `${this.progreso.toFixed(1)}%`,
+      distancia: `${this.distanciaRecorrida.toFixed(2)} km`
+    });
   }
 
   private recorridoCompletado() {
@@ -483,7 +565,11 @@ export class HomeConductorPage implements OnInit, AfterViewInit {
     
     // Mostrar mensaje de completado
     setTimeout(() => {
-      this.mostrarAlerta('¡Recorrido Completado!', 'El recorrido ha sido completado exitosamente.');
+      this.mostrarAlerta('¡Recorrido Completado!', 
+        `El recorrido ha sido completado exitosamente.\n\n` +
+        `Distancia total: ${this.distanciaTotal.toFixed(2)} km\n` +
+        `Tiempo estimado: ${((this.puntosRecorrido.length * this.velocidad) / 1000 / 60).toFixed(1)} minutos`
+      );
     }, 500);
   }
 
@@ -535,6 +621,69 @@ export class HomeConductorPage implements OnInit, AfterViewInit {
 
   togglePanelSeleccion() {
     this.mostrarPanelSeleccion = !this.mostrarPanelSeleccion;
+  }
+
+  // Método para probar el icono del carro - MEJORADO
+  probarIconoCarro() {
+    console.log('🧪 Probando icono del carro...');
+    
+    // Usar coordenadas reales de Buenaventura
+    const testLng = -77.0797;
+    const testLat = 3.8836;
+    
+    // Crear feature de prueba
+    const testFeature = new Feature({
+      geometry: new Point(fromLonLat([testLng, testLat]))
+    });
+    
+    // Crear icono de prueba
+    const carIcon = new Icon({
+      src:
+        "data:image/svg+xml;utf8," +
+        encodeURIComponent(`
+        <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="12" width="24" height="10" rx="2" fill="#FF0000" stroke="#000" stroke-width="2"/>
+          <circle cx="10" cy="24" r="3" fill="#FF9900"/>
+          <circle cx="22" cy="24" r="3" fill="#FF9900"/>
+          <rect x="8" y="8" width="16" height="4" fill="#FF0000" stroke="#000" stroke-width="2"/>
+          <rect x="12" y="14" width="8" height="4" fill="#00FF00" stroke="#000" stroke-width="1"/>
+        </svg>
+      `),
+      scale: 2.0, // Más grande para prueba
+      anchor: [0.5, 0.5],
+    });
+    
+    testFeature.setStyle(new Style({ image: carIcon }));
+    
+    this.carroLayer.getSource().clear();
+    this.carroLayer.getSource().addFeature(testFeature);
+    
+    // Centrar en el carro de prueba
+    this.map?.getView().animate({
+      center: fromLonLat([testLng, testLat]),
+      zoom: 18,
+      duration: 1000
+    });
+    
+    console.log('✅ Carro de prueba creado (color rojo brillante)');
+  }
+
+  // Nuevo método para debug visual
+  mostrarInfoDebug() {
+    console.log('=== DEBUG INFO ===');
+    console.log('Mapa:', this.map ? 'Creado' : 'No creado');
+    console.log('Capa carro visible:', this.carroLayer.getVisible());
+    console.log('Features en capa carro:', this.carroLayer.getSource().getFeatures().length);
+    console.log('Carro feature:', this.carroFeature ? 'Presente' : 'Ausente');
+    
+    if (this.carroFeature) {
+      console.log('Geometría carro:', this.carroFeature.getGeometry());
+      console.log('Estilo carro:', this.carroFeature.getStyle());
+    }
+    
+    console.log('Recorrido activo:', this.recorridoActivo);
+    console.log('Puntos recorrido:', this.puntosRecorrido.length);
+    console.log('==================');
   }
 
   private async mostrarAlerta(titulo: string, mensaje: string) {
