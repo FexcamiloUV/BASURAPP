@@ -57,9 +57,9 @@ async login(){
     });
     
     if (result.success && result.user) {
-      console.log('🎉 Login exitoso, rol:', result.user.role);
+      console.log('Login exitoso, rol:', result.user.role);
       
-      // 🔥 NAVEGAR SEGÚN EL ROL DEL USER
+      //NAVEGAR SEGÚN EL ROL DEL USER
       if (result.user.role === 'admin') {
         this.nav.navigateRoot('/home-admin');
       } else if (result.user.role === 'conductor') {

@@ -1,9 +1,9 @@
-// Fondo base
+
 ion-content {
   --background: #f2f4f8;
 }
 
-// 1. MAPA FULLSCREEN
+
 .map-container {
   width: 100%;
   height: 100%;
@@ -13,7 +13,7 @@ ion-content {
   z-index: 1;
 }
 
-// 2. MIXIN PARA GLASSMORPHISM (Estilo Vidrio)
+
 @mixin glass-panel {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
@@ -21,7 +21,7 @@ ion-content {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-// 3. BOTONES FLOTANTES SUPERIORES
+
 .top-tools {
   position: absolute;
   top: 20px;
@@ -41,7 +41,7 @@ ion-content {
   }
 }
 
-// 4. PANEL INFERIOR (CREADOR)
+
 .control-panel {
   @include glass-panel;
   position: absolute;
@@ -117,20 +117,20 @@ ion-content {
     }
 
     .save-btn {
-      flex: 2; // El botón guardar ocupa más espacio
+      flex: 2; 
       font-weight: 600;
     }
   }
 }
 
-// 5. PANEL LISTA DE RUTAS (Tarjeta Flotante Central/Superior)
+
 .floating-card {
   @include glass-panel;
   position: absolute;
-  top: 80px; // Debajo de los botones flotantes
+  top: 80px; 
   left: 20px;
   right: 20px;
-  max-height: 60%; // No ocupar toda la pantalla
+  max-height: 60%; 
   z-index: 200;
   display: flex;
   flex-direction: column;
@@ -180,7 +180,7 @@ ion-content {
   }
 }
 
-// 6. LOADING
+
 .loading-overlay {
   position: absolute;
   inset: 0;

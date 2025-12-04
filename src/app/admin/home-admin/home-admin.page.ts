@@ -98,13 +98,13 @@ export class HomeAdminPage implements OnInit, AfterViewInit {
       const lat = coordinates.coords.latitude;
       const lng = coordinates.coords.longitude;
 
-      console.log('📍 Ubicación REAL obtenida:', { lat, lng });
+      console.log('Ubicación REAL obtenida:', { lat, lng });
       this.currentLocation = { lat, lng };
 
       this.initializeMap(lng, lat);
     } catch (error) {
-      console.error('❌ Error obteniendo ubicación:', error);
-      console.log('🗺️ Usando ubicación por defecto: Buenaventura');
+      console.error('Error obteniendo ubicación:', error);
+      console.log('Usando ubicación por defecto: Buenaventura');
       this.initializeMap(-77.0797, 3.8836);
     } finally {
       this.isLoading = false;
@@ -206,7 +206,7 @@ export class HomeAdminPage implements OnInit, AfterViewInit {
       this.actualizarRuta();
     }
 
-    console.log('📍 Punto agregado:', puntoData);
+    console.log('Punto agregado:', puntoData);
   }
 
   private actualizarRuta(): void {
@@ -254,7 +254,7 @@ export class HomeAdminPage implements OnInit, AfterViewInit {
       ]
     };
 
-    console.log('🔄 GeoJSON actualizado:', this.rutasGeoJSON);
+    console.log('GeoJSON actualizado:', this.rutasGeoJSON);
   }
 
   public calcularDistanciaTotal(): number {
@@ -289,7 +289,7 @@ export class HomeAdminPage implements OnInit, AfterViewInit {
   // Método para guardar la ruta en Supabase
   async guardarRuta() {
     if (this.puntos.length < 2) {
-      console.warn('⚠️ Necesitas al menos 2 puntos para guardar una ruta');
+      console.warn('Necesitas al menos 2 puntos para guardar una ruta');
       alert('Necesitas al menos 2 puntos para guardar una ruta');
       return;
     }
@@ -310,14 +310,14 @@ export class HomeAdminPage implements OnInit, AfterViewInit {
         throw error;
       }
 
-      console.log('💾 Ruta guardada en Supabase:', data);
+      console.log('Ruta guardada en Supabase:', data);
       alert('Ruta guardada exitosamente en la base de datos!');
       
       // Recargar la lista de rutas
       await this.cargarRutasGuardadas();
 
     } catch (error) {
-      console.error('❌ Error guardando ruta en Supabase:', error);
+      console.error('Error guardando ruta en Supabase:', error);
       alert('Error al guardar la ruta en la base de datos');
     } finally {
       this.guardando = false;
@@ -336,10 +336,10 @@ export class HomeAdminPage implements OnInit, AfterViewInit {
       }
 
       this.rutasGuardadas = data || [];
-      console.log('📂 Rutas cargadas desde Supabase:', this.rutasGuardadas.length);
+      console.log('Rutas cargadas desde Supabase:', this.rutasGuardadas.length);
 
     } catch (error) {
-      console.error('❌ Error cargando rutas desde Supabase:', error);
+      console.error('Error cargando rutas desde Supabase:', error);
       this.rutasGuardadas = [];
     } finally {
       this.cargandoRutas = false;
@@ -366,7 +366,7 @@ export class HomeAdminPage implements OnInit, AfterViewInit {
         this.agregarPunto(lng, lat);
       });
 
-      console.log('🗺️ Ruta cargada en el mapa:', ruta.nombre);
+      console.log('Ruta cargada en el mapa:', ruta.nombre);
       
       // Centrar el mapa en la ruta
       if (puntosFeatures.length > 0) {
@@ -380,7 +380,7 @@ export class HomeAdminPage implements OnInit, AfterViewInit {
       }
 
     } catch (error) {
-      console.error('❌ Error cargando ruta en el mapa:', error);
+      console.error('Error cargando ruta en el mapa:', error);
       alert('Error al cargar la ruta en el mapa');
     }
   }
@@ -396,12 +396,12 @@ export class HomeAdminPage implements OnInit, AfterViewInit {
         throw error;
       }
 
-      console.log('🗑️ Ruta eliminada:', ruta.id);
+      console.log('Ruta eliminada:', ruta.id);
       await this.cargarRutasGuardadas(); // Recargar lista
       alert('Ruta eliminada exitosamente');
 
     } catch (error) {
-      console.error('❌ Error eliminando ruta:', error);
+      console.error('Error eliminando ruta:', error);
       alert('Error al eliminar la ruta');
     }
   }
@@ -414,13 +414,13 @@ export class HomeAdminPage implements OnInit, AfterViewInit {
     this.markerLayer.getSource().clear();
     this.routeLayer.getSource().clear();
     
-    console.log('🗑️ Ruta actual limpiada');
+    console.log('Ruta actual limpiada');
   }
 
   // Método para exportar el GeoJSON
   exportarGeoJSON() {
     if (this.puntos.length === 0) {
-      console.warn('⚠️ No hay puntos para exportar');
+      console.warn('No hay puntos para exportar');
       alert('No hay puntos para exportar');
       return;
     }
@@ -435,7 +435,7 @@ export class HomeAdminPage implements OnInit, AfterViewInit {
     link.click();
     
     URL.revokeObjectURL(url);
-    console.log('📤 GeoJSON exportado');
+    console.log('GeoJSON exportado');
   }
 
   // Método para centrar el mapa en la ubicación actual
@@ -455,7 +455,7 @@ export class HomeAdminPage implements OnInit, AfterViewInit {
       });
 
     } catch (error) {
-      console.error('❌ Error obteniendo ubicación actual:', error);
+      console.error('Error obteniendo ubicación actual:', error);
     }
   }
 
