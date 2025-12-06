@@ -1,0 +1,41 @@
+<ion-header [translucent]="true">
+
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">login</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-img src="assets/img/registro.png"></ion-img>
+
+  <div class="content">
+    <ion-text>Inicio de Sesion</ion-text>
+    <form [formGroup]="loginForm" (ngSubmit)="login()" class="seccion">
+
+     <div class="info">
+       <ion-item>
+        <ion-input placeholder="Correo" type="email" formControlName="email">
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input placeholder="Contraseña" type="password" formControlName="password">
+        </ion-input>
+      </ion-item>
+     </div>
+
+      <div class="buttons">
+        <ion-button shape="round"  class="btnInicio" (click)="login()" expand="block">Iniciar Sesión</ion-button>
+      <a href="">¿Has olvidado tu Contraseña</a>
+
+
+      </div>
+    </form>
+
+
+
+  </div>
+</ion-content>

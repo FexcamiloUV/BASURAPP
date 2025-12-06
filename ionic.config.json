@@ -1,0 +1,10 @@
+{
+  "name": "Recogreen",
+  "integrations": {
+    "capacitor": {},
+       "Theme": {
+      "darkMode": false
+  },
+  "type": "angular-standalone"
+}
+}

@@ -1,0 +1,24 @@
+ion-content{
+   --background: url('/assets/img/imagen.png') no-repeat center center / cover;
+  --background-size: cover;
+    --overflow: hidden;
+}
+
+.sesion{
+  gap: 20px;
+  padding-bottom: 10%;
+  display: flex; 
+  flex-direction: column;
+  align-items: center;
+}
+
+ion-button{
+  --background: rgb(74, 194, 74);
+  --color: white;
+  width: 70%;
+
+}
+
+.Ciudadano{
+  width: 70%;
+}

@@ -1,0 +1,93 @@
+ion-content{
+    --background: white;
+    --overflow: hidden;
+}
+
+ion-list {
+  --background: transparent;
+  background: transparent;
+}
+
+ion-item {
+  --color: black;
+  --background: transparent;
+  background: transparent;
+}
+
+.img{
+     display: flex;
+  margin: 0 auto;
+    width: 220px;
+    height: 220px;
+}
+
+.floating-menu {
+    padding: 10px;
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 1000;
+}
+
+.menu-btn {
+  --color: #000000;
+  --background: rgba(255, 255, 255, 0.8);
+  --border-radius: 50%;
+  width: 44px;
+  height: 44px;
+}
+
+
+
+.aviso {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+    margin: auto;
+    border-radius: 15px;
+    height: 8vh;
+    width: 70%;
+    color: #000000;
+    background-color: rgb(235, 243, 243)
+}
+.tiempo-llegada {
+  margin-top: auto;
+  text-align: center;
+  padding-bottom: 3%;
+}
+
+
+.informacion{
+    font-size: 22px;
+    gap: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.filtrar{
+  margin-top: 5%;
+  display: flex;
+  justify-content: center;
+}
+.content{
+  overflow: hidden; // Cambiar de auto a hidden
+  position: relative;
+  flex-direction: column;
+  margin: 0 auto;
+  display: flex;
+  background-color: rgb(221, 214, 214);
+  height: 50vh; // Usar vh en lugar de %
+  min-height: 300px; // Altura mínima
+  width: 85%;
+  border-radius: 20px;
+  top: 7%;
+}
+
+#mapId {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  position: relative; // Añadir esto
+  z-index: 1;
+}

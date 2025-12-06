@@ -1,0 +1,46 @@
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">login</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-img src="assets/img/registro.png"></ion-img>
+
+  <div class="content">
+    <ion-text>Registro</ion-text>
+    <form [formGroup]="registerForm" (ngSubmit)="register()" class="seccion">
+
+     <div class="info">
+         <ion-item>
+          <ion-input placeholder="Nombre Completo" type="text" formControlName="name">
+          </ion-input>
+        </ion-item>
+
+       <ion-item>
+          <ion-input placeholder="Correo" type="email" formControlName="email">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input placeholder="Contraseña" type="password" formControlName="password">
+          </ion-input>
+        </ion-item>
+
+        <!-- 🔥 AGREGAR SELECTOR DE ROL -->
+        <ion-item>
+          <ion-select placeholder="Selecciona tu rol" formControlName="role" interface="action-sheet">
+            <ion-select-option value="conductor">Conductor</ion-select-option>
+            <ion-select-option value="admin">Administrador</ion-select-option>
+          </ion-select>
+        </ion-item>
+     </div>
+
+      <div class="buttons">
+        <ion-button shape="round" class="btnInicio" (click)="register()" expand="block" [disabled]="registerForm.invalid">
+          Registrar
+        </ion-button>
+      </div>
+    </form>
+  </div>
+</ion-content>

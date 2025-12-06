@@ -1,0 +1,86 @@
+ion-content {
+  --overflow: hidden;
+  --background: url('/assets/img/loginP.png') no-repeat center center / cover;
+}
+  
+ion-input{
+  color: black;
+  border-radius: 10px;
+}
+
+ion-button {
+  --color:white;
+  width: 100%;
+  height: 5vh;
+  font-size: 20px;
+  --background: rgb(83, 221, 83);
+  display: flex;
+  bottom: 6%;
+  } 
+
+ion-item{
+  --background: transparent;
+  --border-radius: 10px;
+}
+
+ion-text{
+  display: flex;
+  margin: 0 auto;
+  font-size: 25px;
+  font-weight: bold;
+  color: black;
+}
+
+ion-img{
+  display: flex;
+  margin: 0 auto;
+  width: 400px;
+  height: 400px;
+}
+
+
+.content {
+  position: relative;
+  flex-direction: column;
+  margin: 0 auto;
+  display: flex;
+  background-color: rgb(221, 214, 214);
+  height: 45vh;
+  width: 85%;
+  border-radius: 20px;
+  padding: 20px;
+  
+}
+
+.seccion {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+}
+
+.buttons {
+  width: 80%;
+  display: flex;
+  position: absolute;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  bottom: 5%;
+}
+
+.info{
+  margin-top: 10%;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* En móviles, cuando el teclado está activo */
+@media (max-height: 600px) {
+  .content {
+    height: auto;
+    max-height: 80vh;
+  }
+}

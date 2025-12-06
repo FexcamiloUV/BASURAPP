@@ -1,0 +1,186 @@
+// Variables reutilizables
+$primary-color: #3880ff;
+$success-color: #10b981;
+$danger-color: #ef4444;
+$text-dark: #1e293b;
+$text-light: #64748b;
+$border-color: #e2e8f0;
+$card-bg: white;
+$shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+
+// Mixins
+@mixin card-style {
+  background: $card-bg;
+  border-radius: 16px;
+  box-shadow: $shadow;
+  border: 1px solid $border-color;
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+}
+
+// Header
+.header-custom {
+  .toolbar-gradient { --color: white; }
+  .title-custom {
+    font-weight: 600;
+    font-size: 1.1rem;
+    @include flex-center;
+    .title-icon {
+      margin-right: 8px;
+      font-size: 1.2rem;
+    }
+  }
+}
+
+.menu { color: white; }
+
+.content-custom {
+  --background: #f8fafc;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 8px;
+}
+
+// Secciones
+.section { margin-bottom: 24px; }
+
+// Selectores
+.selectores-section {
+  margin-top: 10px;
+  .selector-card {
+    @include card-style;
+    padding: 20px;
+    @include flex-center;
+    align-items: flex-start;
+    .selector-content {
+      flex: 1;
+      width: 100%;
+      .selector-label {
+        display: block;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+// Mapa
+.mapa-container {
+  @include card-style;
+  overflow: hidden;
+  margin-bottom: 20px;
+  .mapa { height: 40vh !important; }
+}
+
+// Info Section
+.info-section {
+  .info-card {
+    @include card-style;
+    padding: 20px;
+    .info-header {
+      @include flex-center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      .route-badge, .vehicle-badge {
+        @include flex-center;
+        background: #f1f5f9;
+        padding: 8px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #475569;
+        ion-icon { margin-right: 6px; font-size: 0.9rem; }
+      }
+    }
+    .route-name {
+      margin: 0 0 8px 0;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: $text-dark;
+    }
+    .route-description {
+      margin: 0;
+      color: $text-light;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// Control Section
+.control-section {
+  .action-container {
+    @include card-style;
+    padding: 24px 20px;
+    text-align: center;
+    .main-action-button {
+      --border-radius: 16px;
+      --padding-top: 24px;
+      --padding-bottom: 24px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      &[color="success"] { box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); }
+      &[color="danger"] { box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4); }
+    }
+  }
+}
+
+// Status Section
+.status-section {
+  .status-card {
+    background: linear-gradient(135deg, #fffbeb, #fed7aa);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #fdba74;
+    .status-header {
+      @include flex-center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(251, 146, 60, 0.3);
+    }
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+  }
+}
+
+// Menu Styles (Mantén solo los esenciales)
+.menu-button {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --background: transparent;
+  ion-icon { font-size: 24px; }
+}
+
+ion-menu {
+  --width: 280px;
+  --min-width: 280px;
+  ion-content { --background: #f8f9fa; }
+  ion-list { background: transparent; padding: 8px 0; }
+}
+
+// Animaciones (solo las necesarias)
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .content-custom {
+    --padding-start: 12px;
+    --padding-end: 12px;
+  }
+  .status-grid { grid-template-columns: 1fr !important; }
+  .mapa { height: 50vh !important; }
+}
+
+.scroll-spacer { height: 40px; }
