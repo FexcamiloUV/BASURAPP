@@ -1,62 +1,82 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonButton, IonInput, LoadingController, NavController, IonImg, IonText, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
-import { Alerts } from 'src/service/alerts/alerts';   
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonLabel, IonItem, IonButton, IonRouterLink, IonInput, IonIcon, NavController, LoadingController } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { arrowBackOutline } from 'ionicons/icons';
 import { AuthService } from 'src/service/Auth/auth-service';
-
 @Component({
-  selector: 'app-register',
+  selector: 'app-registro',
   templateUrl: './registro.page.html',
   styleUrls: ['./registro.page.scss'],
   standalone: true,
-  imports: [IonSelect, IonSelectOption, IonText, IonImg, FormsModule, ReactiveFormsModule, IonButton, IonItem, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, IonInput, FormsModule]
+  imports: [
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    IonLabel,
+    IonItem,
+    IonButton,
+    IonRouterLink,
+    IonInput,
+    IonIcon
+]
 })
 export class RegistroPage implements OnInit {
-  registerForm!: FormGroup;
-  private Alerts = inject(Alerts);
-  private loadingController = inject(LoadingController);
-  private AuthService = inject(AuthService);
-  private nav = inject(NavController);
+private nav = inject(NavController)
 
-  constructor() { }
+  formularioRegistro!: FormGroup;
+  private loadingController = inject(LoadingController);
+private authService = inject(AuthService)
+
+  constructor(){
+     addIcons({arrowBackOutline});
+  };
+  
 
   ngOnInit() {
-    this.registerForm = new FormGroup({
+    this.formularioRegistro = new FormGroup({
       name: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)]),
-      role: new FormControl('', [Validators.required]) // 🔥 AGREGAR ESTA LÍNEA
+      role: new FormControl('conductor', Validators.required)
     });
   }
+  async register() {
+    if (this.formularioRegistro.invalid) return console.log('Formulario inválido');
 
- async register() {
-  if (this.registerForm.invalid) return this.Alerts.DataVacia();
-
-  const loading = await this.loadingController.create({
-    message: 'Creando cuenta...',
-  });
-  await loading.present();
-
-  try {
-    const formValue = this.registerForm.value;
-    const result = await this.AuthService.register({
-      name: formValue.name,
-      email: formValue.email,
-      password: formValue.password,
-      role: formValue.role
+    const loading = await this.loadingController.create({
+      message: 'Registrando conductor...',
     });
-    
-    if (result.success) {
-      this.nav.navigateRoot('/login');
+
+    await loading.present();
+
+    try {
+      const formValue = this.formularioRegistro.value;
+      const result = await this.authService.register({
+        name: formValue.name,
+        email: formValue.email,
+        password: formValue.password,
+        role: formValue.role,
+      });
+
+      if (result.success) {
+        await loading.dismiss();
+        this.formularioRegistro.reset();
+      } else {
+        await loading.dismiss();
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
       await loading.dismiss();
-    } else {
-      await loading.dismiss();
+      console.log('Error de conexión');
     }
-  } catch (error) {
-    console.error('Error during registration:', error);
-    await loading.dismiss();
-    this.Alerts.DataIncorreta();
   }
-}
+  back() {
+    this.nav.back();
+  }
 }

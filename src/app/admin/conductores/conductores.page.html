@@ -1,0 +1,98 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>conductores</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+    </ion-toolbar>
+  </ion-header>
+
+     <div class="conductores">
+      <div class="conductor-title">
+        <ion-text style="font-size: 22px;">Lista de Conductores</ion-text>
+      </div>
+      
+      <!-- CONTENEDOR PARA LIMITAR A 3 ELEMENTOS -->
+      <div class="lista-container">
+        <ion-list>
+          <ion-item (click)="verConductor(conductor.id)" button="true" class="info" *ngFor="let conductor of conductores">
+            <ion-text class="name-conductor">{{ conductor.name }}</ion-text>
+            <ion-button size="large" slot="end" fill="clear" color="danger">
+              <ion-icon name="person-remove-outline"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </ion-list>
+      </div>
+      <!-- FIN CONTENEDOR -->
+      
+      <div class="add">
+        <ion-button (click)="abriModalConductor()">
+          Agregar Conductor
+        </ion-button>
+      </div>
+    </div>
+
+
+  <!-- Modal para ver info del conductor -->
+  <ion-modal [isOpen]="modalAbiertoInfo" (didDismiss)="cerrarModalInfo()" [initialBreakpoint]="0.60"
+    [breakpoints]="[0.25, 0.5, 0.60]" class="custom-modal">
+    <ng-template>
+      <div class="modal-container">
+        <div class="modal-header">
+          <h2>Conductor</h2>
+        </div>
+        <div class="info">
+          <ion-item>
+            <ion-label>Nombre:</ion-label>
+            <ion-text>{{ Perfil?.name }}</ion-text>
+          </ion-item>
+          <ion-item>
+            <ion-label>Email:</ion-label>
+            <ion-text>{{ Perfil?.email }}</ion-text>
+          </ion-item>
+          <ion-item>
+            <ion-label>Role:</ion-label>
+            <ion-text>{{ Perfil?.role }}</ion-text>
+          </ion-item>
+
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
+    <!-- Modal para agregar conductor -->
+  <ion-modal [isOpen]="modalConductores" (didDismiss)="cerraModalConductor()" [initialBreakpoint]="0.60"
+    [breakpoints]="[0.25, 0.5, 0.60]" class="custom-modal">
+    <ng-template>
+      <div class="modal-container">
+        <div class="modal-header">
+          <div class="modal-handle"></div>
+          <h2>Agregar Conductores</h2>
+        </div>
+        <form [formGroup]="registerForm" class="info">
+          <div class="info">
+            <ion-item>
+              <ion-input placeholder="Nombre Completo" type="text" formControlName="name">
+              </ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input placeholder="Correo" type="email" formControlName="email">
+              </ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input placeholder="Contraseña" type="password" formControlName="password">
+              </ion-input>
+            </ion-item>
+            <div class="btn">
+              <ion-button color="success" class="buttonIni" type="submit" expand="block" (click)="register()">
+                Registrar Conductor
+              </ion-button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </ng-template>
+  </ion-modal>
+</ion-content>

@@ -1,388 +1,198 @@
-<ion-header [translucent]="true"></ion-header>
-
-<ion-content [fullscreen]="true" scrollY="false">
-  <!-- Solo muestra el contenido del segmento activo -->
-  <div class="map" *ngIf="selectedTab === 'home'">
-
-    <div class="conductores">
-      <div class="conductor-title">
-        <ion-text style="font-size: 22px;">Lista de Conductores</ion-text>
-      </div>
-      
-      <!-- CONTENEDOR PARA LIMITAR A 3 ELEMENTOS -->
-      <div class="lista-container">
-        <ion-list>
-          <ion-item (click)="verConductor(conductor.id)" button="true" class="info" *ngFor="let conductor of conductores">
-            <ion-text class="name-conductor">{{ conductor.name }}</ion-text>
-            <ion-button size="large" slot="end" fill="clear" color="danger">
-              <ion-icon name="person-remove-outline"></ion-icon>
-            </ion-button>
-          </ion-item>
-        </ion-list>
-      </div>
-      <!-- FIN CONTENEDOR -->
-      
-      <div class="add">
-        <ion-button (click)="abriModalConductor()">
-          Agregar Conductor
-        </ion-button>
-      </div>
-    </div>
-
-    <div class="vehiculos">
-      <div class="conductor-title">
-        <ion-text style="font-size: 22px;">Lista de Vehículos</ion-text>
-      </div>
-      
-      <!-- CONTENEDOR PARA LIMITAR A 3 ELEMENTOS -->
-      <div class="lista-container">
-        <ion-list>
-          <ion-item button="true" (click)="verVehiculo(vehiculo.id)" class="info" *ngFor="let vehiculo of vehiculo">
-            <ion-text class="name-conductor">{{ vehiculo.marca}}</ion-text>
-            <ion-button size="large" slot="end" fill="clear" color="danger">
-              <ion-icon name="person-remove-outline"></ion-icon>
-            </ion-button>
-          </ion-item>
-        </ion-list>
-      </div>
-      <!-- FIN CONTENEDOR -->
-      
-      <div class="add">
-        <ion-button (click)="abriModalVehiculo()">
-          Agregar Vehículo
-        </ion-button>
-      </div>
-    </div>
-  </div>
-  <!--contenido del mapa-->
-  <div *ngIf="selectedTab === 'map'">
-    <div id="mapId" style="height: 50vh; width: 100%;"></div>
-
-    <!-- Alert para mensajes -->
-    <ion-alert [isOpen]="showAlert" [message]="alertMessage" [buttons]="['OK']"
-      (didDismiss)="showAlert = false"></ion-alert>
-
-    <!-- Configuración de la Ruta -->
-    <ion-card class="config-rutas">
-      <ion-card-header>
-        <ion-card-title>Configuración de Ruta</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-item>
-          <ion-label position="stacked">Nombre de la Ruta</ion-label>
-          <ion-input [(ngModel)]="nombreRuta" placeholder="Ej: Ruta Casa-Trabajo"
-            (ionInput)="actualizarRutaCompleta()"></ion-input>
+<ion-menu side="start" menuId="conductor-menu" contentId="home-conductor-content">
+  <ion-header>
+    <ion-toolbar color="success">
+      <ion-title>{{userName}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-menu-toggle auto-hide="false">
+        <ion-item (click)="logout()">
+          <ion-icon slot="start" name="log-out"></ion-icon>
+          <ion-label>Cerrar sesión</ion-label>
         </ion-item>
-      </ion-card-content>
-    </ion-card>
+      </ion-menu-toggle>
+    </ion-list>
+  </ion-content>
+</ion-menu>
 
-    <!-- Gestión de Recorrido -->
-    <ion-card>
-      <ion-card-header class="header-ges">
-      </ion-card-header>
-      <ion-card-content>
-        <ion-list>
-          <!-- Estado del modo recorrido -->
-          <ion-item>
-            <ion-label>Modo Creacion de Rutas</ion-label>
-            <ion-badge [color]="modoRecorrido ? 'success' : 'medium'">
-              {{ modoRecorrido ? 'ACTIVO' : 'INACTIVO' }}
-            </ion-badge>
-          </ion-item>
-        </ion-list>
-
-        <!-- Botones de acción -->
-        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
-          <ion-button expand="block" [color]="modoRecorrido ? 'danger' : 'success'" (click)="toggleModoRecorrido()">
-            <ion-icon slot="start" [name]="modoRecorrido ? 'stop' : 'play'"></ion-icon>
-            {{ modoRecorrido ? 'Detener creacion de rutas' : 'Crear Rutas' }}
-          </ion-button>
-
-          <div style="display: flex; gap: 10px;">
-            <ion-button expand="block" color="primary" (click)="guardarRuta()"
-              [disabled]="!rutaCompleta || guardandoRuta">
-              <ion-spinner *ngIf="guardandoRuta"></ion-spinner>
-              <ion-icon *ngIf="!guardandoRuta" slot="start" name="download"></ion-icon>
-              {{ guardandoRuta ? 'Guardando...' : 'Guardar Ruta' }}
-            </ion-button>
-
-            <ion-button expand="block" color="secondary" (click)="abrirModalRutas()">
-              <ion-icon slot="start" name="copy"></ion-icon>
-              Mirar rutas
-            </ion-button>
-
-            <ion-button expand="block" color="danger" (click)="eliminarRecorrido()"
-              [disabled]="puntosRecorrido.length === 0">
-              <ion-icon slot="start" name="trash"></ion-icon>
-              Eliminar
-            </ion-button>
-          </div>
-        </div>
-      </ion-card-content>
-    </ion-card>
-
-    <!-- Preview del JSON -->
-    <ion-card *ngIf="showJsonPreview && rutaCompleta">
-      <ion-card-header>
-        <ion-card-title>JSON de la Ruta</ion-card-title>
-        <ion-button fill="clear" (click)="toggleJsonPreview()">
-          <ion-icon slot="icon-only" name="close"></ion-icon>
-        </ion-button>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-textarea [value]="getRutaFormateada(rutaCompleta)" rows="10" readonly
-          style="font-family: monospace; font-size: 12px;"></ion-textarea>
-      </ion-card-content>
-    </ion-card>
-
-    <!-- Loading -->
-    <div *ngIf="isLoading" class="loading-spinner">
-      <ion-spinner></ion-spinner>
-      <p>Cargando mapa...</p>
-    </div>
-
-    <!-- Modal para Rutas Guardadas -->
-    <ion-modal [isOpen]="modalRutasAbierto" (didDismiss)="cerrarModalRutas()">
-      <ng-template>
-        <ion-header>
-          <ion-toolbar>
-            <ion-title>Rutas Guardadas</ion-title>
-            <ion-buttons slot="end">
-              <ion-button (click)="cerrarModalRutas()">
-                <ion-icon slot="icon-only" name="close"></ion-icon>
-              </ion-button>
-            </ion-buttons>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content class="ion-padding">
-          <ion-card>
-            <ion-card-header>
-              <ion-card-title>🔄 Rutas Guardadas en Servidor</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              <div style="display: flex; justify-content: space-between; margin :8%; ">
-                <ion-button expand="block" color="secondary" (click)="cargarRutasGuardadas()"
-                  [disabled]="cargandoRutas">
-                  <ion-spinner *ngIf="cargandoRutas"></ion-spinner>
-                  <ion-icon *ngIf="!cargandoRutas" slot="start" name="refresh"></ion-icon>
-                </ion-button>
-
-                <!-- Botón para mostrar/ocultar rutas -->
-                <ion-button expand="block" [color]="rutasVisibles ? 'warning' : 'success'"
-                  (click)="toggleRutasGuardadas()">
-                  <ion-icon slot="start" [name]="rutasVisibles ? 'eye-off' : 'eye'"></ion-icon>
-                </ion-button>
-              </div>
-
-              <div *ngIf="rutasGuardadas.length > 0; else sinRutas">
-                <ion-list>
-                  <ion-item *ngFor="let ruta of rutasGuardadas; let i = index">
-                    <ion-label>
-                      <h3>{{ ruta.nombre_ruta }}</h3>
-                    </ion-label>
-                    <div slot="end" style="display: flex; gap: 5px;">
-                      <ion-button color="primary" size="small" (click)="centrarEnRuta(ruta)">
-                        <ion-icon name="locate"></ion-icon>
-                      </ion-button>
-                      <ion-button color="danger" size="small">
-                        <ion-icon name="trash"></ion-icon>
-                      </ion-button>
-                    </div>
-                  </ion-item>
-                </ion-list>
-              </div>
-
-              <ng-template #sinRutas>
-                <ion-item>
-                  <ion-label class="ion-text-center">
-                    <p>No hay rutas guardadas en el servidor</p>
-                    <p *ngIf="!cargandoRutas">Crea una ruta y guárdala para verla aquí</p>
-                  </ion-label>
-                </ion-item>
-              </ng-template>
-            </ion-card-content>
-          </ion-card>
-
-          <ion-button expand="block" color="medium" (click)="cerrarModalRutas()" style="margin-top: 20px;">
-            Cerrar
-          </ion-button>
-        </ion-content>
-      </ng-template>
-    </ion-modal>
-  </div>
-  <!--contenido del perfil-->
-  <div *ngIf="selectedTab === 'perfil'">
-    <div class="logoUser">
-      <ion-icon class="icon" name="person-circle" size="large"></ion-icon>
-    </div>
-    <div class="infoPerfil">
-      <ion-list>
-        <ion-item>
-          <ion-label>Nombre:</ion-label>
-          <ion-text>{{ userData?.name }}</ion-text>
-        </ion-item>
-        <ion-item>
-          <ion-label>Email:</ion-label>
-          <ion-text>{{ userData?.email }}</ion-text>
-        </ion-item>
-        <ion-item>
-          <ion-label>Rol:</ion-label>
-          <ion-text>{{ userData?.role }}</ion-text>
-        </ion-item>
-      </ion-list>
-    </div>
-    <!-- Botón de logout al final -->
-    <div class="btnlogout-section">
-      <ion-button color="danger" class="buttonIni" (click)="logout()" expand="block" fill="outline">
-        <ion-icon slot="start" name="log-out"></ion-icon>
-        Cerrar Sesión
+<ion-header [translucent]="true" class="header-custom">
+  <ion-toolbar color="success" class="toolbar-gradient">
+    <!-- Botón del menú corregido -->
+    <ion-buttons slot="start">
+      <ion-menu-button menu="conductor-menu" class="menu-button">
+        <ion-icon name="menu" color="light"></ion-icon>
+      </ion-menu-button>
+    </ion-buttons>
+    
+    
+    <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon name="notifications" color="light"></ion-icon>
       </ion-button>
-    </div>
-  </div>
-
-  <!-- Modal para agregar vehículo -->
-  <ion-modal [isOpen]="modalVehiculo" (didDismiss)="CerrarVehiculo()" [initialBreakpoint]="0.60"
-    [breakpoints]="[0.25, 0.5, 0.60]" class="custom-modal">
-    <ng-template>
-      <div class="modal-container">
-        <div class="modal-header">
-          <div class="modal-handle"></div>
-          <h2>Agregar Vehículos</h2>
-        </div>
-        <form [formGroup]="vehiculoForm" class="info">
-          <ion-item>
-            <ion-input placeholder="Placa" type="text" formControlName="placa"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-select aria-label="Fruit" interface="popover" placeholder="Selecciona Marca" formControlName="marca">
-              <ion-select-option value="Heil">Heil</ion-select-option>
-              <ion-select-option value="McNeilus">McNeilus</ion-select-option>
-              <ion-select-option value="Mercedez-Benz">Mercedez-Benz</ion-select-option>
-            </ion-select>
-          </ion-item>
-          <ion-item>
-            <ion-select aria-label="Año" interface="popover" placeholder="Selecciona modelo" formControlName="modelo">
-              <ion-select-option *ngFor="let ano of anos" [value]="ano">{{ ano }}</ion-select-option>
-            </ion-select>
-          </ion-item>
-          <div class="btn">
-            <ion-button color="success" class="buttonIni" type="submit" expand="block" (click)="registrarVehiculo()">
-              Registrar Vehículo
-            </ion-button>
-          </div>
-        </form>
-      </div>
-    </ng-template>
-  </ion-modal>
-
-  <!-- Modal para agregar conductor -->
-  <ion-modal [isOpen]="modalConductores" (didDismiss)="cerraModalConductor()" [initialBreakpoint]="0.60"
-    [breakpoints]="[0.25, 0.5, 0.60]" class="custom-modal">
-    <ng-template>
-      <div class="modal-container">
-        <div class="modal-header">
-          <div class="modal-handle"></div>
-          <h2>Agregar Conductores</h2>
-        </div>
-        <form [formGroup]="registerForm" class="info">
-          <div class="info">
-            <ion-item>
-              <ion-input placeholder="Nombre Completo" type="text" formControlName="name">
-              </ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input placeholder="Correo" type="email" formControlName="email">
-              </ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-input placeholder="Contraseña" type="password" formControlName="password">
-              </ion-input>
-            </ion-item>
-            <div class="btn">
-              <ion-button color="success" class="buttonIni" type="submit" expand="block" (click)="register()">
-                Registrar Conductor
-              </ion-button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </ng-template>
-  </ion-modal>
-  
-  <!-- Modal para ver info del conductor -->
-  <ion-modal [isOpen]="modalAbiertoInfo" (didDismiss)="cerrarModalInfo()" [initialBreakpoint]="0.60"
-    [breakpoints]="[0.25, 0.5, 0.60]" class="custom-modal">
-    <ng-template>
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>Conductor</h2>
-        </div>
-        <div class="info">
-          <ion-item>
-            <ion-label>Nombre:</ion-label>
-            <ion-text>{{ Perfil?.name }}</ion-text>
-          </ion-item>
-          <ion-item>
-            <ion-label>Email:</ion-label>
-            <ion-text>{{ Perfil?.email }}</ion-text>
-          </ion-item>
-          <ion-item>
-            <ion-label>Role:</ion-label>
-            <ion-text>{{ Perfil?.role }}</ion-text>
-          </ion-item>
-          <div class="btn">
-            <ion-button color="success" class="buttonIni" type="submit" expand="block" (click)="registrarVehiculo()">
-              Registrar Vehículo
-            </ion-button>
-          </div>
-        </div>
-      </div>
-    </ng-template>
-  </ion-modal>
-  
-  <!-- Modal para ver info del vehiculo -->
-  <ion-modal [isOpen]="vehiculoModal" (didDismiss)="cerrarModalVehiculo()" [initialBreakpoint]="0.60"
-    [breakpoints]="[0.25, 0.5, 0.60]" class="custom-modal">
-    <ng-template>
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2>Vehículo</h2>
-        </div>
-        <div class="info">
-          <ion-item>
-            <ion-label>Marca:</ion-label>
-            <ion-text>{{vehiculoData?.marca}}</ion-text>
-          </ion-item>
-          <ion-item>
-            <ion-label>Placa:</ion-label>
-            <ion-text>{{vehiculoData?.placa}}</ion-text>
-          </ion-item>
-          <ion-item>
-            <ion-label>Modelo:</ion-label>
-            <ion-text>{{vehiculoData?.modelo}}</ion-text>
-          </ion-item>
-        </div>
-      </div>
-    </ng-template>
-  </ion-modal>
-</ion-content>
-
-<!--footer para la navegacion -->
-<ion-footer>
-  <ion-toolbar>
-    <ion-segment [(ngModel)]="selectedTab" (ionChange)="onSegmentChange($event)">
-      <ion-segment-button value="home">
-        <ion-icon name="home"></ion-icon>
-        <ion-label>Inicio</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="map">
-        <ion-icon name="map"></ion-icon>
-        <ion-label>Mapa</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="perfil">
-        <ion-icon name="person-outline"></ion-icon>
-        <ion-label>Perfil</ion-label>
-      </ion-segment-button>
-    </ion-segment>
+    </ion-buttons>
   </ion-toolbar>
-</ion-footer>
+</ion-header>
+
+
+    <ion-content [fullscreen]="true" scrollY="false" id="main-content">
+      <div class="map" *ngIf="selectedTab === 'home'">
+      </div>
+      
+      <!-- Contenido del mapa -->
+      <div *ngIf="selectedTab === 'map'">
+        <div id="mapId" style="height: 50vh; width: 100%;"></div>
+
+        <!-- Alert para mensajes -->
+        <ion-alert [isOpen]="showAlert" [message]="alertMessage" [buttons]="['OK']"
+          (didDismiss)="showAlert = false"></ion-alert>
+
+        <!-- Configuración de la Ruta -->
+        <ion-card class="config-rutas">
+          <ion-card-header>
+            <ion-card-title>Configuración de Ruta</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              <ion-label position="stacked">Nombre de la Ruta</ion-label>
+              <ion-input [(ngModel)]="nombreRuta" placeholder="Ej: Ruta Casa-Trabajo"
+                (ionInput)="actualizarRutaCompleta()"></ion-input>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Gestión de Recorrido -->
+        <ion-card>
+          <ion-card-header class="header-ges">
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list>
+              <!-- Estado del modo recorrido -->
+              <ion-item>
+                <ion-label>Modo Creación de Rutas</ion-label>
+                <ion-badge [color]="modoRecorrido ? 'success' : 'medium'">
+                  {{ modoRecorrido ? 'ACTIVO' : 'INACTIVO' }}
+                </ion-badge>
+              </ion-item>
+            </ion-list>
+
+            <!-- Botones de acción -->
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+              <ion-button expand="block" [color]="modoRecorrido ? 'danger' : 'success'" (click)="toggleModoRecorrido()">
+                <ion-icon slot="start" [name]="modoRecorrido ? 'stop' : 'play'"></ion-icon>
+                {{ modoRecorrido ? 'Detener creación de rutas' : 'Crear Rutas' }}
+              </ion-button>
+
+              <div style="display: flex; gap: 10px;">
+                <ion-button expand="block" color="primary" (click)="guardarRuta()"
+                  [disabled]="!rutaCompleta || guardandoRuta">
+                  <ion-spinner *ngIf="guardandoRuta"></ion-spinner>
+                  <ion-icon *ngIf="!guardandoRuta" slot="start" name="download"></ion-icon>
+                  {{ guardandoRuta ? 'Guardando...' : 'Guardar Ruta' }}
+                </ion-button>
+
+                <ion-button expand="block" color="secondary" (click)="abrirModalRutas()">
+                  <ion-icon slot="start" name="copy"></ion-icon>
+                  Mirar rutas
+                </ion-button>
+
+                <ion-button expand="block" color="danger" (click)="eliminarRecorrido()"
+                  [disabled]="puntosRecorrido.length === 0">
+                  <ion-icon slot="start" name="trash"></ion-icon>
+                  Eliminar
+                </ion-button>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Preview del JSON -->
+        <ion-card *ngIf="showJsonPreview && rutaCompleta">
+          <ion-card-header>
+            <ion-card-title>JSON de la Ruta</ion-card-title>
+            <ion-button fill="clear" (click)="toggleJsonPreview()">
+              <ion-icon slot="icon-only" name="close"></ion-icon>
+            </ion-button>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-textarea [value]="getRutaFormateada(rutaCompleta)" rows="10" readonly
+              style="font-family: monospace; font-size: 12px;"></ion-textarea>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Loading -->
+        <div *ngIf="isLoading" class="loading-spinner">
+          <ion-spinner></ion-spinner>
+          <p>Cargando mapa...</p>
+        </div>
+
+        <!-- Modal para Rutas Guardadas -->
+        <ion-modal [isOpen]="modalRutasAbierto" (didDismiss)="cerrarModalRutas()">
+          <ng-template>
+            <ion-header>
+              <ion-toolbar>
+                <ion-title>Rutas Guardadas</ion-title>
+                <ion-buttons slot="end">
+                  <ion-button (click)="cerrarModalRutas()">
+                    <ion-icon slot="icon-only" name="close"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </ion-toolbar>
+            </ion-header>
+            <ion-content class="ion-padding">
+              <ion-card>
+                <ion-card-header>
+                  <ion-card-title>🔄 Rutas Guardadas en Servidor</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                  <div style="display: flex; justify-content: space-between; margin :8%; ">
+                    <ion-button expand="block" color="secondary" (click)="cargarRutasGuardadas()"
+                      [disabled]="cargandoRutas">
+                      <ion-spinner *ngIf="cargandoRutas"></ion-spinner>
+                      <ion-icon *ngIf="!cargandoRutas" slot="start" name="refresh"></ion-icon>
+                    </ion-button>
+
+                    <!-- Botón para mostrar/ocultar rutas -->
+                    <ion-button expand="block" [color]="rutasVisibles ? 'warning' : 'success'"
+                      (click)="toggleRutasGuardadas()">
+                      <ion-icon slot="start" [name]="rutasVisibles ? 'eye-off' : 'eye'"></ion-icon>
+                    </ion-button>
+                  </div>
+
+                  <div *ngIf="rutasGuardadas.length > 0; else sinRutas">
+                    <ion-list>
+                      <ion-item *ngFor="let ruta of rutasGuardadas; let i = index">
+                        <ion-label>
+                          <h3>{{ ruta.nombre_ruta }}</h3>
+                        </ion-label>
+                        <div slot="end" style="display: flex; gap: 5px;">
+                          <ion-button color="primary" size="small" (click)="centrarEnRuta(ruta)">
+                            <ion-icon name="locate"></ion-icon>
+                          </ion-button>
+                          <ion-button color="danger" size="small">
+                            <ion-icon name="trash"></ion-icon>
+                          </ion-button>
+                        </div>
+                      </ion-item>
+                    </ion-list>
+                  </div>
+
+                  <ng-template #sinRutas>
+                    <ion-item>
+                      <ion-label class="ion-text-center">
+                        <p>No hay rutas guardadas en el servidor</p>
+                        <p *ngIf="!cargandoRutas">Crea una ruta y guárdala para verla aquí</p>
+                      </ion-label>
+                    </ion-item>
+                  </ng-template>
+                </ion-card-content>
+              </ion-card>
+
+              <ion-button expand="block" color="medium" (click)="cerrarModalRutas()" style="margin-top: 20px;">
+                Cerrar
+              </ion-button>
+            </ion-content>
+          </ng-template>
+        </ion-modal>
+      </div>
+    </ion-content>

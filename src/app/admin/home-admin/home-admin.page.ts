@@ -2,7 +2,7 @@ import { Component, inject, OnInit, Inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { DOCUMENT } from "@angular/common";
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonIcon, IonImg, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonList, IonItem, IonLabel, IonBadge, IonAlert, IonFab, IonFabButton, IonInput, IonTextarea, IonButtons, IonModal, AlertController, IonSpinner, IonFabList, IonSegment, IonSegmentButton, IonFooter, IonSegmentView, IonSegmentContent, IonMenu, NavController, IonMenuButton, IonTabButton, LoadingController, IonSelectOption, IonSelect, IonActionSheet, IonNote, IonAvatar } from "@ionic/angular/standalone";
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonIcon, IonImg, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonList, IonItem, IonLabel, IonBadge, IonAlert, IonFab, IonFabButton, IonInput, IonTextarea, IonButtons, IonModal, AlertController, IonSpinner, IonFabList, IonSegment, IonSegmentButton, IonFooter, IonSegmentView, IonSegmentContent, IonMenu, NavController, IonMenuButton, IonTabButton, LoadingController, IonSelectOption, IonSelect, IonActionSheet, IonNote, IonAvatar, IonMenuToggle, IonApp } from "@ionic/angular/standalone";
 import { addIcons } from "ionicons";
 import {
   notifications,
@@ -26,7 +26,8 @@ import {
   home,
   personOutline,
   personRemoveOutline,
-  logOut, camera, ellipsisVertical, personCircle, settings, shieldCheckmark } from "ionicons/icons";
+  logOut, camera, ellipsisVertical, personCircle, settings, shieldCheckmark, menu, navigate, 
+  person} from "ionicons/icons";
 import { CargaDatos } from "src/service/datos/cargar-datos";
 import { Geolocation } from "@capacitor/geolocation";
 import Map from "ol/Map";
@@ -68,7 +69,7 @@ interface PuntoRecorrido {
   templateUrl: "./home-admin.page.html",
   styleUrls: ["./home-admin.page.scss"],
   standalone: true,
-  imports: [IonAvatar, IonNote, IonActionSheet,
+  imports: [IonApp, IonAvatar, IonNote, IonActionSheet,
     IonSelect,
     IonInput,
     IonFooter,
@@ -99,16 +100,13 @@ interface PuntoRecorrido {
     IonIcon,
     IonSegment,
     IonSegmentButton,
-    IonText, IonSelectOption, ReactiveFormsModule, IonMenuButton],
+    IonText, IonSelectOption, ReactiveFormsModule, IonMenuButton, IonMenuToggle, IonMenu],
 })
 export class HomeAdminPage implements OnInit {
-  Perfil: UserProfile | null = null;
   vehiculoData: Vehiculos | null = null;
-  modalAbiertoInfo = false;
   dataSesion = inject(AuthService).currentUser;
   selectedTab: "map" | "home" | "perfil" = "map";
   private map: Map | undefined;
-  anos = ['2019', '2020', '2021', '2022', '2023', '2024'];
   private datos = inject(CargaDatos);
   private alertController = inject(AlertController);
   modalRutasAbierto = false;
@@ -127,26 +125,22 @@ export class HomeAdminPage implements OnInit {
   isLoading = true;
   vehiculo! : Vehiculos[];
   userName = "";
-  modalVehiculo = false;
   userData: { name: string; role: string; email: string } | null = null;
   guardandoRuta = false;
   private CargaDatos = inject(CargaDatos);
   cargandoRutas = false;
-  vehiculoModal = false;
   isDarkMode = false;
   rutasVisibles = true; // Nueva variable para controlar visibilidad
-  conductores: UserProfile[] = [];
   // Variables para el recorrido
   modoRecorrido = false;
   puntosRecorrido: PuntoRecorrido[] = [];
   siguienteId = 1;
   showAlert = false;
   alertMessage = "";
-  modalConductores = false;
 
   // Variables para la ruta completa
   nombreRuta = "ruta casa";
-  perfilId = "75fb749d-1bbc-4b4c-9b65-eedc5204afa5";
+  perfilId = "c14fb089-0812-4ba8-8a35-32ba08e35ce6";
   rutaCompleta: Rutas | null = null;
   showJsonPreview = false;
   JSON = JSON;
@@ -158,7 +152,7 @@ export class HomeAdminPage implements OnInit {
   private document = inject(DOCUMENT);
 
   constructor() {
-    addIcons({personRemoveOutline,download,copy,trash,close,refresh,locate,personCircle,settings,notifications,shieldCheckmark,logOut,home,map,personOutline,ellipsisVertical,add,location,camera,document,play,stop,wifi,sunny,moon,eyeOff,eye,});
+    addIcons({logOut,person,settings,menu,notifications,download,copy,trash,close,refresh,locate,navigate,personRemoveOutline,personCircle,shieldCheckmark,home,map,personOutline,ellipsisVertical,add,location,camera,document,play,stop,wifi,sunny,moon,eyeOff,eye,});
   }
 
   async ngOnInit() {
@@ -184,10 +178,8 @@ export class HomeAdminPage implements OnInit {
   this.cargarRutasGuardadas();
   this.initializeDarkMode();
   this.onSegmentChange({ detail: { value: this.selectedTab } });
-  await this.getConductores();
   await this.obtenerUserSeccion();
   await this.loadUserData();
-  await this.obtenerVehiculos();
 }
 
 onSegmentChange(event: any) {
@@ -202,13 +194,7 @@ onSegmentChange(event: any) {
 }
 
 
-  abrirModalInfo() {
-    this.modalAbiertoInfo = true;
-  }
 
-   cerrarModalInfo() {
-    this.modalAbiertoInfo = false;
-  }
 
   toggleDarkMode() {
     this.isDarkMode = !this.isDarkMode;
@@ -236,30 +222,13 @@ onSegmentChange(event: any) {
     }
   }
 
-  abriModalConductor(){
-    this.modalConductores = true;
-  }
-  cerraModalConductor(){
-    this.modalConductores = false;
-  }
-  abriModalVehiculo(){
-    this.modalVehiculo = true;
-  }
-  CerrarVehiculo(){
-    this.modalVehiculo = false;
-  }
+
+
 
   cerrarModalRutas() {
     this.modalRutasAbierto = false;
   }
 
-  vehiculoModalOpen(){
-    this.vehiculoModal = true;
-  }
-
-  cerrarModalVehiculo(){
-    this.vehiculoModal = false;
-  }
 
   async loadMap() {
     this.isLoading = true;
@@ -1084,14 +1053,9 @@ onSegmentChange(event: any) {
     await alert.present();
   }
 
-  async getConductores() {
-    this.conductores = await this.authService.getAllConductores();
-  }
 
-  async verConductor(id: string) {
-    this.Perfil = await this.authService.getProfileById(id);
-    this.abrirModalInfo();
-  }
+
+ 
   async logout() {
     // Confirmar con el usuario antes de cerrar sesión
     const confirm = await this.alertController.create({
@@ -1152,76 +1116,15 @@ onSegmentChange(event: any) {
   
   }
 
-   async registrarVehiculo() {
-    const formValue = this.vehiculoForm.value;
 
-    if (this.vehiculoForm.invalid) {
-      this.alerts.DataIncorreta();
-      return;
-    }
 
-    const loading = await this.loadingController.create({
-      message: 'Registrando Vehículo...',
-    });
-
-    await loading.present();
-    
-    try {
-      await this.CargaDatos.registrarVehiculo(formValue);
-      await loading.dismiss();
-      this.vehiculoForm.reset();
-      this.obtenerVehiculos();
-      console.log('Vehículo registrado con éxito', formValue);
-    } catch (error) {
-      await loading.dismiss();
-      console.error('Error registrando vehículo:', error);
-    }
-  }
-
-  async obtenerVehiculos() {
-    this.vehiculo = await this.CargaDatos.obtenerVehiculos();
-    console.log("Vehículos Disponibles", this.vehiculo);
-  }
-
-  async verVehiculo(id: string) {
-    this.vehiculoData = await this.CargaDatos.obtenerVehiculoPorId(id);
-    this.vehiculoModalOpen();
-  }
+ 
 
 
 async obtenerUserSeccion(){
  this.userData = await this.authService.getCurrentUserData( );
 }
 
- async register() {
-  if (this.registerForm.invalid) return this.Alerts.DataVacia();
 
-  const loading = await this.loadingController.create({
-    message: 'Creando cuenta...',
-  });
-  await loading.present();
-
-  try {
-    const formValue = this.registerForm.value;
-    const result = await this.authService.register({
-      name: formValue.name,
-      email: formValue.email,
-      password: formValue.password,
-      role: formValue.role
-    });
-    
-    if (result.success) {
-      await loading.dismiss();
-      this.registerForm.reset();
-      await this.getConductores();
-    } else {
-      await loading.dismiss();
-    }
-  } catch (error) {
-    console.error('Error during registration:', error);
-    await loading.dismiss();
-    this.Alerts.DataIncorreta();
-  }
-}
   
 }

@@ -2,13 +2,10 @@ import { Routes } from '@angular/router';
 import { RoleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
-  {
-    path: 'home',
-    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
-  },
+
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'login',
     pathMatch: 'full',
   },
   {
@@ -41,5 +38,13 @@ export const routes: Routes = [
     loadComponent: () => import('./admin/home-admin/home-admin.page').then(m => m.HomeAdminPage),
     canActivate: [RoleGuard],
     data: { roles: ['admin'] } // Solo admin
+  },
+  {
+    path: 'vehiculos',
+    loadComponent: () => import('./admin/vehiculos/vehiculos.page').then( m => m.VehiculosPage)
+  },
+  {
+    path: 'conductores',
+    loadComponent: () => import('./admin/conductores/conductores.page').then( m => m.ConductoresPage)
   },
 ];

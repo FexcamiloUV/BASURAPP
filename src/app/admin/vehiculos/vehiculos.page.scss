@@ -1,0 +1,248 @@
+/* ===== ESTILOS ESPECÍFICOS PARA VEHÍCULOS ===== */
+
+/* Contenedor principal de vehículos */
+.vehiculos {
+  min-height: 45vh;
+  max-height: 55vh;
+  margin: 0 auto;
+  width: 80%;
+  margin-bottom: 4%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Título de vehículos */
+.vehiculos .conductor-title {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.vehiculos .conductor-title ion-text {
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #10b981, #059669);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Contenedor de lista con scroll */
+.vehiculos .lista-container {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 60vh;
+  margin-bottom: 16px;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Items de vehículos específicos */
+.vehiculos ion-list {
+  background: transparent;
+  padding: 12px;
+}
+
+.vehiculos ion-item {
+  --border-radius: 12px;
+  --padding-start: 16px;
+  --padding-end: 12px;
+  --min-height: 60px;
+  margin-bottom: 8px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s ease;
+}
+
+.vehiculos ion-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #10b981;
+}
+
+/* Texto del nombre del vehículo */
+.vehiculos .name-conductor {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  letter-spacing: 0.3px;
+}
+
+/* Botón de eliminar vehículo */
+.vehiculos ion-item ion-button {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  margin: 0;
+}
+
+.vehiculos ion-item ion-icon {
+  font-size: 20px;
+}
+
+/* Sección de agregar vehículo */
+.vehiculos .add {
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+  padding: 16px 0;
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(to bottom, transparent, #f8fafc 30px);
+  padding-top: 20px;
+}
+
+.vehiculos .add ion-button {
+  --background: linear-gradient(135deg, #10b981, #059669);
+  --background-hover: #059669;
+  --background-activated: #047857;
+  --border-radius: 14px;
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  --padding-start: 24px;
+  --padding-end: 24px;
+  --box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+}
+
+/* Modal específico para vehículos */
+.vehiculos .custom-modal {
+  --border-radius: 20px 20px 0 0;
+}
+
+.vehiculos .modal-container {
+  padding: 20px;
+}
+
+.vehiculos .modal-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.vehiculos .modal-header h2 {
+  color: #1e293b;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Formulario de vehículos */
+.vehiculos .info ion-item {
+  --background: #f8fafc;
+  --border-radius: 10px;
+  --padding-start: 14px;
+  margin-bottom: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.vehiculos .info ion-input,
+.vehiculos .info ion-select {
+  --padding-start: 0;
+  --padding-end: 0;
+  font-size: 15px;
+}
+
+.vehiculos .btn {
+  margin-top: 20px;
+}
+
+.vehiculos .btn ion-button {
+  --background: linear-gradient(135deg, #10b981, #059669);
+  --border-radius: 14px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  font-weight: 600;
+  font-size: 15px;
+  width: 100%;
+}
+
+/* Modal de información de vehículo */
+.vehiculos .info ion-label {
+  font-weight: 600;
+  color: #475569;
+  min-width: 80px;
+}
+
+.vehiculos .info ion-text {
+  color: #1e293b;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+/* Scrollbar personalizado para la lista de vehículos */
+.vehiculos .lista-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.vehiculos .lista-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.vehiculos .lista-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.vehiculos .lista-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Estilos responsive para vehículos */
+@media (max-width: 768px) {
+  .vehiculos {
+    width: 90%;
+    min-height: 40vh;
+  }
+  
+  .vehiculos .conductor-title ion-text {
+    font-size: 20px;
+  }
+  
+  .vehiculos ion-item {
+    --min-height: 56px;
+    --padding-start: 14px;
+  }
+  
+  .vehiculos .name-conductor {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .vehiculos {
+    width: 95%;
+  }
+  
+  .vehiculos .add ion-button {
+    --padding-start: 20px;
+    --padding-end: 20px;
+    font-size: 14px;
+  }
+}
+
+/* Estado vacío - cuando no hay vehículos */
+.vehiculos .lista-vacia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: #64748b;
+}
+
+.vehiculos .lista-vacia ion-icon {
+  font-size: 48px;
+  color: #cbd5e1;
+  margin-bottom: 12px;
+}
+
+.vehiculos .lista-vacia p {
+  font-size: 14px;
+  margin: 0;
+}

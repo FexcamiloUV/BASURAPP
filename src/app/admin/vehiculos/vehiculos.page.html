@@ -1,0 +1,95 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+    </ion-toolbar>
+  </ion-header>
+   <div class="vehiculos">
+      <div class="conductor-title">
+        <ion-text style="font-size: 22px;">Lista de Vehículos</ion-text>
+      </div>
+      
+      <!-- CONTENEDOR PARA LIMITAR A 3 ELEMENTOS -->
+      <div class="lista-container">
+        <ion-list>
+          <ion-item button="true" (click)="verVehiculo(vehiculo.id)" class="info" *ngFor="let vehiculo of vehiculo">
+            <ion-text class="name-conductor">{{ vehiculo.marca}}</ion-text>
+            <ion-button size="large" slot="end" fill="clear" color="danger">
+              <ion-icon name="person-remove-outline"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </ion-list>
+      </div>
+      <!-- FIN CONTENEDOR -->
+      
+      <div class="add">
+        <ion-button (click)="abriModalVehiculo()">
+          Agregar Vehículo
+        </ion-button>
+      </div>
+    </div>
+
+      <ion-modal [isOpen]="modalVehiculo" (didDismiss)="CerrarVehiculo()" [initialBreakpoint]="0.60"
+    [breakpoints]="[0.25, 0.5, 0.60]" class="custom-modal">
+    <ng-template>
+      <div class="modal-container">
+        <div class="modal-header">
+          <div class="modal-handle"></div>
+          <h2>Agregar Vehículos</h2>
+        </div>
+        <form [formGroup]="vehiculoForm" class="info">
+          <ion-item>
+            <ion-input placeholder="Placa" type="text" formControlName="placa"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-select aria-label="Fruit" interface="popover" placeholder="Selecciona Marca" formControlName="marca">
+              <ion-select-option value="Heil">Heil</ion-select-option>
+              <ion-select-option value="McNeilus">McNeilus</ion-select-option>
+              <ion-select-option value="Mercedez-Benz">Mercedez-Benz</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-select aria-label="Año" interface="popover" placeholder="Selecciona modelo" formControlName="modelo">
+              <ion-select-option *ngFor="let ano of anos" [value]="ano">{{ ano }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <div class="btn">
+            <ion-button color="success" class="buttonIni" type="submit" expand="block" (click)="registrarVehiculo()">
+              Registrar Vehículo
+            </ion-button>
+          </div>
+        </form>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+    <!-- Modal para ver info del vehiculo -->
+  <ion-modal [isOpen]="vehiculoModal" (didDismiss)="cerrarModalVehiculo()" [initialBreakpoint]="0.60"
+    [breakpoints]="[0.25, 0.5, 0.60]" class="custom-modal">
+    <ng-template>
+      <div class="modal-container">
+        <div class="modal-header">
+          <h2>Vehículo</h2>
+        </div>
+        <div class="info">
+          <ion-item>
+            <ion-label>Marca:</ion-label>
+            <ion-text>{{vehiculoData?.marca}}</ion-text>
+          </ion-item>
+          <ion-item>
+            <ion-label>Placa:</ion-label>
+            <ion-text>{{vehiculoData?.placa}}</ion-text>
+          </ion-item>
+          <ion-item>
+            <ion-label>Modelo:</ion-label>
+            <ion-text>{{vehiculoData?.modelo}}</ion-text>
+          </ion-item>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
+</ion-content>

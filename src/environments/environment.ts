@@ -4,8 +4,10 @@
 
 export const environment = {
   url: "https://apirecoleccion.gonzaloandreslucio.com/api",
-  supabaseUrl: "https://nuozmrwzzgexjzialsvo.supabase.co",
-  supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51b3ptcnd6emdleGp6aWFsc3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3ODI0OTgsImV4cCI6MjA3ODM1ODQ5OH0.AbkFFKl1ERGqhJUhZDSn2tGZB-K1PXpONPmA85NVwyA", 
+  production: false,
+  supabaseUrl: 'https://zdupdlusgutznadullac.supabase.co',
+  supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpkdXBkbHVzZ3V0em5hZHVsbGFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1MjM3MDAsImV4cCI6MjA3OTA5OTcwMH0.Oy0RjYwwj1xgfA9vbi4wZK9l0M9cX7pTsjUS_L0Y2kY'
+
 };
 
 /*
