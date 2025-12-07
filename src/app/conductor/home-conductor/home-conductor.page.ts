@@ -281,15 +281,30 @@ private limpiarTodasLasCapas() {
 
   // ==================== SELECTOR DE MODO DE OPERACIÓN ====================
 
-  async MostrarMapa() {
+async MostrarMapa() {
   this.isLoading = true;
 
   try {
-    // ✅ VERIFICAR SI EL MAPA YA EXISTE
+    // ✅ 1. VERIFICAR PERMISOS PRIMERO
+    const permiso = await Geolocation.checkPermissions();
+    console.log("📱 Permisos actuales:", permiso);
+
+    if (permiso.location !== 'granted') {
+      console.log("🔍 Solicitando permisos de ubicación...");
+      const nuevoPermiso = await Geolocation.requestPermissions();
+      console.log("📱 Nuevos permisos:", nuevoPermiso);
+
+      if (nuevoPermiso.location !== 'granted') {
+        throw new Error('Permisos de ubicación denegados');
+      }
+    }
+
+    // ✅ 2. VERIFICAR SI EL MAPA YA EXISTE
     if (!this.map) {
       await this.initializeMapIfNeeded();
     }
 
+    // ✅ 3. OBTENER UBICACIÓN CON CONFIGURACIÓN PARA MÓVILES
     const coordinates = await Geolocation.getCurrentPosition({
       enableHighAccuracy: true,
       timeout: 15000,
@@ -299,31 +314,83 @@ private limpiarTodasLasCapas() {
     const lat = coordinates.coords.latitude;
     const lng = coordinates.coords.longitude;
 
-    console.log("📍 Ubicación REAL obtenida:", { lat, lng });
+    console.log("📍 Ubicación REAL obtenida en móvil:", { 
+      lat, 
+      lng,
+      accuracy: coordinates.coords.accuracy,
+      altitude: coordinates.coords.altitude,
+      speed: coordinates.coords.speed 
+    });
+    
     this.currentLocation = { lat, lng };
 
-    // ✅ SI EL MAPA NO EXISTE, INICIALIZARLO
+    // ✅ 4. INICIALIZAR O ACTUALIZAR MAPA
     if (!this.map) {
       this.initializeMap(lng, lat);
     } else {
-      // ✅ SI EXISTE, SOLO ACTUALIZAR LA VISTA
       this.map.getView().animate({
         center: fromLonLat([lng, lat]),
         zoom: 15,
         duration: 1000,
       });
     }
-  } catch (error) {
-    console.error("❌ Error obteniendo ubicación:", error);
+
+    // ✅ 5. AGREGAR MARCADOR DE UBICACIÓN ACTUAL (opcional)
+    this.agregarMarcadorUbicacionActual(lng, lat);
+
+  } catch (error: any) {
+    console.error("❌ Error obteniendo ubicación en móvil:", error);
+    
+    // Mensaje más específico según el error
+    if (error.message.includes('denied')) {
+      await this.mostrarAlerta(
+        "Permisos Requeridos",
+        "La aplicación necesita acceso a tu ubicación para funcionar correctamente. Por favor, habilita los permisos de ubicación en la configuración de tu dispositivo."
+      );
+    } else if (error.message.includes('timeout')) {
+      await this.mostrarAlerta(
+        "Tiempo Agotado",
+        "No se pudo obtener la ubicación. Verifica que el GPS esté activado en tu dispositivo."
+      );
+    }
+    
     console.log("🗺️ Usando ubicación por defecto: Buenaventura");
     
-    // ✅ INICIALIZAR MAPA CON UBICACIÓN POR DEFECTO SI NO EXISTE
     if (!this.map) {
       this.initializeMap(-77.0797, 3.8836);
     }
   } finally {
     this.isLoading = false;
   }
+}
+
+// Método para agregar marcador de ubicación actual
+private agregarMarcadorUbicacionActual(lng: number, lat: number) {
+  if (!this.markerLayer) return;
+
+  // Limpiar marcadores anteriores
+  this.markerLayer.getSource().clear();
+
+  // Crear icono para ubicación actual
+  const userIcon = new Icon({
+    src: 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+      <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="16" r="14" fill="#3880ff" opacity="0.7"/>
+        <circle cx="16" cy="16" r="8" fill="#3880ff"/>
+        <circle cx="16" cy="16" r="4" fill="white"/>
+      </svg>
+    `),
+    scale: 1.0,
+    anchor: [0.5, 0.5],
+  });
+
+  const userFeature = new Feature({
+    geometry: new Point(fromLonLat([lng, lat])),
+    name: "ubicacion_actual",
+  });
+
+  userFeature.setStyle(new Style({ image: userIcon }));
+  this.markerLayer.getSource().addFeature(userFeature);
 }
 
 
@@ -660,42 +727,151 @@ private limpiarTodasLasCapas() {
     this.isWebSocketConnected = false;
   }
 
-  private async startRealTimeLocationTracking() {
-    if (!this.recorridoId || !this.vehiculoId) {
-      console.warn('⚠️ No se puede iniciar tracking sin recorridoId y vehiculoId');
-      return;
-    }
-
-    try {
-      // Inicializar WebSocket
-      await this.initializeWebSocketConnection();
-
-      // Configurar seguimiento de ubicación en tiempo real
-      this.watchPositionId = await Geolocation.watchPosition(
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 5000,
-        },
-        (position, err) => {
-          if (err) {
-            console.error('❌ Error en watchPosition:', err);
-            return;
-          }
-
-          if (position) {
-            this.handleNewLocation(position);
-
-          }
-        }
-      );
-
-      console.log('📍 Seguimiento de ubicación en tiempo real iniciado');
-    } catch (error) {
-      console.error('❌ Error iniciando seguimiento de ubicación:', error);
-    }
+ private async startRealTimeLocationTracking() {
+  if (!this.recorridoId || !this.vehiculoId) {
+    console.warn('⚠️ No se puede iniciar tracking sin recorridoId y vehiculoId');
+    return;
   }
 
+  try {
+    // ✅ 1. VERIFICAR PERMISOS ANTES DE INICIAR
+    const permiso = await Geolocation.checkPermissions();
+    if (permiso.location !== 'granted') {
+      const nuevoPermiso = await Geolocation.requestPermissions();
+      if (nuevoPermiso.location !== 'granted') {
+        await this.mostrarAlerta(
+          "Permisos Requeridos",
+          "El seguimiento en tiempo real requiere permisos de ubicación."
+        );
+        return;
+      }
+    }
+
+    // ✅ 2. INICIALIZAR WEBSOCKET
+    await this.initializeWebSocketConnection();
+
+    // ✅ 3. CONFIGURACIÓN OPTIMIZADA PARA MÓVILES
+    this.watchPositionId = await Geolocation.watchPosition(
+      {
+        enableHighAccuracy: true,    // GPS en móviles
+        timeout: 10000,              // 10 segundos máximo
+        maximumAge: 5000,            // No usar datos de más de 5 segundos
+      },
+      (position, err) => {
+        if (err) {
+          console.error('❌ Error en watchPosition (móvil):', err);
+          
+          // Manejar errores específicos de móviles
+          if (err.code === 1) { // PERMISSION_DENIED
+            console.error('Permisos de ubicación denegados en móvil');
+          } else if (err.code === 2) { // POSITION_UNAVAILABLE
+            console.error('GPS no disponible en el móvil');
+          } else if (err.code === 3) { // TIMEOUT
+            console.error('Timeout obteniendo ubicación en móvil');
+          }
+          
+          return;
+        }
+
+        if (position) {
+          console.log('📍 Nueva ubicación en móvil:', {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+            speed: position.coords.speed,
+            timestamp: new Date(position.timestamp).toLocaleTimeString()
+          });
+          
+          this.handleNewLocation(position);
+        }
+      }
+    );
+
+    console.log('📍 Seguimiento de ubicación en tiempo real iniciado en móvil');
+    
+    await this.mostrarAlerta(
+      "GPS Activo",
+      "El seguimiento GPS está activo. Tu ubicación se actualizará automáticamente mientras te mueves."
+    );
+
+  } catch (error) {
+    console.error('❌ Error iniciando seguimiento de ubicación en móvil:', error);
+    await this.mostrarAlerta(
+      "Error GPS",
+      "No se pudo iniciar el seguimiento GPS. Verifica que tu dispositivo tenga GPS activado."
+    );
+  }
+}
+
+async verificarDisponibilidadGPS(): Promise<boolean> {
+  try {
+    // Verificar si el dispositivo soporta geolocalización
+    if (!('geolocation' in navigator)) {
+      console.warn('❌ Geolocation no soportado en este navegador');
+      return false;
+    }
+
+    // Verificar permisos
+    const permiso = await Geolocation.checkPermissions();
+    const tienePermisos = permiso.location === 'granted';
+    
+    // Intentar obtener una ubicación rápida para verificar
+    if (tienePermisos) {
+      const posicion = await Geolocation.getCurrentPosition({
+        enableHighAccuracy: false,
+        timeout: 5000,
+      });
+      console.log('✅ GPS disponible y funcionando');
+      return true;
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('❌ GPS no disponible:', error);
+    return false;
+  }
+}
+
+async activarGPSMensaje() {
+  const confirm = await this.alertController.create({
+    header: 'GPS Requerido',
+    message: 'Para usar el seguimiento en tiempo real, necesitas activar el GPS en tu dispositivo. ¿Deseas activarlo ahora?',
+    buttons: [
+      {
+        text: 'Más Tarde',
+        role: 'cancel'
+      },
+      {
+        text: 'Activar GPS',
+        handler: async () => {
+          try {
+            // En dispositivos móviles, esto puede abrir la configuración
+            await Geolocation.requestPermissions();
+            
+            // Verificar nuevamente
+            const gpsDisponible = await this.verificarDisponibilidadGPS();
+            
+            if (gpsDisponible) {
+              await this.mostrarAlerta(
+                'GPS Activado',
+                'El GPS está ahora activo. Puedes iniciar el seguimiento.'
+              );
+            } else {
+              await this.mostrarAlerta(
+                'GPS No Disponible',
+                'No se pudo activar el GPS. Verifica la configuración de tu dispositivo.'
+              );
+            }
+          } catch (error) {
+            console.error('Error activando GPS:', error);
+          }
+        }
+      }
+    ]
+  });
+  
+  await confirm.present();
+}
  
 
   private shouldSendLocationUpdate(newLocation: any): boolean {
@@ -1286,7 +1462,7 @@ async seleccionarRuta(event: any) {
   }
 }
  async toggleRecorridoMode() {
-  if (!this.rutaSeleccionada) {
+    if (!this.rutaSeleccionada) {
     await this.mostrarAlerta("Error", "Por favor selecciona una ruta primero");
     return;
   }
@@ -1294,6 +1470,16 @@ async seleccionarRuta(event: any) {
   if (!this.vehiculoId) {
     await this.mostrarAlerta("Error", "Por favor selecciona un vehículo primero");
     return;
+  }
+
+  // ✅ VERIFICAR GPS PARA MODO TIEMPO REAL
+  if (this.modoOperacion === 'tiempo-real' && !this.modoRecorrido) {
+    const gpsDisponible = await this.verificarDisponibilidadGPS();
+    
+    if (!gpsDisponible) {
+      await this.activarGPSMensaje();
+      return;
+    }
   }
 
   this.modoRecorrido = !this.modoRecorrido;
