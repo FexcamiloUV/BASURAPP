@@ -1,571 +1,441 @@
-/* ===== ESTILOS BASE Y RESET ===== */
+/* ===== ESTILOS BASE ===== */
 ion-content {
-  --padding-bottom: 60px;
-  height: 100vh;
   --background: #f8fafc;
-}
-
-.content-container {
-  padding-bottom: 60px;
-  min-height: calc(100vh - 60px);
-}
-
-/* ===== FOOTER COMPACTO ===== */
-ion-footer {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  z-index: 1000;
-  background: white;
-  box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
-  height: 60px;
-}
-
-ion-toolbar {
-  --min-height: 60px;
-  --padding-top: 0;
   --padding-bottom: 0;
-  --background: white;
 }
 
-/* ===== SEGMENTOS ULTRA COMPACTOS (MANTENIDOS EXACTAMENTE IGUAL) ===== */
-ion-segment {
-  --background: white;
-  height: 100%;
-  padding: 4px 8px;
+/* ===== HEADER MEJORADO ===== */
+.header-custom {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
 
-ion-segment-button {
-  --padding-start: 6px;
-  --padding-end: 6px;
-  --padding-top: 6px;
-  --padding-bottom: 6px;
-  --border-radius: 12px;
-  --background: transparent;
-  --background-checked: #10b981;
-  --color: #64748b;
-  --color-checked: white;
-  min-height: 44px;
-  margin: 0 2px;
-  transition: all 0.2s ease;
-  
-  ion-icon {
-    font-size: 18px !important;
-    margin-bottom: 2px;
-    transition: all 0.2s ease;
-  }
-  
-  ion-label {
-    font-size: 10px !important;
-    font-weight: 600;
-    margin-top: 1px;
-    transition: all 0.2s ease;
-  }
+.toolbar-gradient {
+  background: linear-gradient(135deg, #3498db, #2980b9);
 }
 
-/* Estados de los segmentos compactos */
-ion-segment-button::part(native) {
-  padding: 4px 6px !important;
-}
-
-/* Efecto hover para segmentos compactos */
-ion-segment-button:hover {
-  --background: #f1f5f9;
-  transform: scale(0.98);
-}
-
-/* ===== TEMA VERDOSO APLICADO ===== */
-
-/* ===== SECCIÓN INICIO - TARJETAS MODERNAS ===== */
-.conductores {
-  /* ELIMINA height: 37vh; */
-  min-height: 40vh; /* Altura mínima */
-  max-height: 50vh; /* Altura máxima para pantallas grandes */
-  margin: 0 auto;
-  width: 80%;
-  padding-top: 8%;
-  margin-bottom: 4%;
-  display: flex;
-  flex-direction: column;
-}
-
-.vehiculos {
-  /* ELIMINA height: 40vh; */
-  min-height: 45vh; /* Altura mínima */
-  max-height: 55vh; /* Altura máxima para pantallas grandes */
-  margin: 0 auto;
-  width: 80%;
-  margin-bottom: 4%;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Contenedor para la lista que se desplaza */
-.lista-container {
-  flex: 1; /* Ocupa el espacio disponible */
-  overflow-y: auto; /* Permite scroll si hay muchos elementos */
-  max-height: 60vh; /* Limita la altura máxima del scroll */
-  margin-bottom: 16px;
-}
-
-/* Botón fijo en la parte inferior del contenedor */
-.add {
-  display: flex;
-  justify-content: center;
-  margin-top: auto; /* Empuja el botón hacia abajo */
-  padding-bottom: 16px;
-  position: sticky;
-  bottom: 0;
-  background: linear-gradient(to bottom, transparent, #f8fafc 20px);
-  padding-top: 16px;
-}
-
-.conductor-title {
-  display: flex;
-  justify-content: center;
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.conductor-title ion-text {
-  font-size: 24px;
-  font-weight: 700;
-  background: linear-gradient(135deg, #10b981, #059669);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Listas mejoradas */
-ion-list {
-  background: transparent;
-  padding: 0;
-}
-
-ion-item {
-  --border-radius: 16px;
-  --padding-start: 20px;
-  --padding-end: 16px;
-  --min-height: 70px;
-  margin-bottom: 12px;
-  border: 1px solid #e2e8f0;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
-}
-
-ion-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: #10b981;
-}
-
-.name-conductor {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-/* Botones modernos con tema verdoso */
-.add {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.add ion-button {
-  --background: linear-gradient(135deg, #10b981, #059669);
-  --background-hover: #059669;
-  --background-activated: #047857;
-  --border-radius: 16px;
-  --padding-top: 16px;
-  --padding-bottom: 16px;
-  --box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
-  font-weight: 600;
-  font-size: 16px;
-}
-
-/* ===== SECCIÓN MAPA - MEJORADA ===== */
-#mapId {
-  height: 45vh !important;
-  min-height: 350px;
-  width: 100%;
-  border-radius: 0 0 24px 24px;
-}
-
-.config-rutas {
-  margin: 20px;
-  border-radius: 20px;
-  background: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.config-rutas ion-card-header {
-  background: linear-gradient(135deg, #10b981, #059669);
-  border-radius: 20px 20px 0 0;
-  padding: 20px;
-}
-
-.config-rutas ion-card-title {
+.header-title {
   color: white;
-  font-size: 18px;
-  font-weight: 700;
-}
-
-/* ===== PERFIL - CON TEMA VERDOSO ===== */
-.logoUser {
-  padding-top: 15%;
-  display: flex;
-  width: 100%;
-  height: auto;
-}
-
-.icon {
-  display: flex;
-  margin: auto;
-  width: 200px;
-  height: 200px;
-  color: #10b981;
-}
-
-.infoPerfil {
-  padding-top: 8%;
-  margin-left: 4%;
-  margin-right: 4%;
-}
-
-.infoPerfil ion-item {
-  --background: transparent;
-  --border-color: #e2e8f0;
-  --padding-start: 0;
-  --inner-padding-end: 0;
-  margin-bottom: 16px;
-}
-
-.infoPerfil ion-label {
   font-weight: 600;
-  color: #475569;
+  font-size: 1.1rem;
+  text-align: center;
 }
 
-.infoPerfil ion-text {
-  color: #1e293b;
+.header-btn {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+/* ===== CONTENEDOR DEL MAPA ===== */
+.map-container {
+  position: relative;
+  height: 65vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+#mapId {
+  height: 100% !important;
+  width: 100%;
+}
+
+/* ===== BOTONES FLOTANTES EN EL MAPA ===== */
+.map-overlay-controls {
+  position: absolute;
+  top: 20px;
+  right: 15px;
+  z-index: 1000;
+}
+
+.map-floating-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 12px;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+}
+
+.map-eye-button {
+  --background: #3498db;
+  --background-hover: #2980b9;
+  --border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  --box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.map-locate-button {
+  --background: #2ecc71;
+  --background-hover: #27ae60;
+  --border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  --box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+}
+
+/* ===== PANEL DE ESTADO EN MAPA ===== */
+.status-panel {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px 20px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+}
+
+.status-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 12px;
+}
+
+.status-text {
+  font-size: 13px;
+  color: #34495e;
   font-weight: 500;
 }
 
-.btnlogout-section {
+/* ===== PANEL DE CONTROL INFERIOR ===== */
+.control-panel {
   padding: 20px;
-  margin-top: 40px;
+  background: white;
+  border-radius: 25px 25px 0 0;
+  margin-top: -20px;
+  position: relative;
+  z-index: 100;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.btnlogout-section ion-button {
-  --border-radius: 12px;
+.route-name-card {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border-radius: 16px;
+  padding: 5px;
+  margin-bottom: 20px;
+  border: 2px solid #e3e8ef;
+}
+
+.route-name-item {
+  --background: transparent;
+  --border-color: transparent;
+  --padding-start: 12px;
+  --inner-padding-end: 12px;
+}
+
+.route-name-item ion-input {
+  --padding-start: 10px;
+  --padding-end: 10px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* ===== CONTROLES DE ACCIÓN ===== */
+.action-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.record-button {
+  --border-radius: 16px;
+  --padding-top: 18px;
+  --padding-bottom: 18px;
+  font-weight: 700;
+  font-size: 16px;
+  --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  height: 56px;
+}
+
+.record-button[color="success"] {
+  --background: linear-gradient(135deg, #2ecc71, #27ae60);
+  --background-hover: #27ae60;
+}
+
+.record-button[color="danger"] {
+  --background: linear-gradient(135deg, #e74c3c, #c0392b);
+  --background-hover: #c0392b;
+}
+
+.secondary-controls {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.action-btn {
+  --border-radius: 14px;
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  height: 48px;
+}
+
+.action-btn[color="primary"] {
+  --background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.action-btn[color="danger"] {
+  --background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.action-btn[color="medium"] {
+  --background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+}
+
+/* ===== PREVIEW JSON ===== */
+.json-preview {
+  background: #2c3e50;
+  border-radius: 16px;
+  margin-top: 20px;
+  overflow: hidden;
+  border: 2px solid #34495e;
+}
+
+.json-header {
+  background: #34495e;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.json-header h3 {
+  margin: 0;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.json-content {
+  padding: 16px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.json-content pre {
+  margin: 0;
+  color: #ecf0f1;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+/* ===== LOADING OVERLAY ===== */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.loading-content {
+  text-align: center;
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.loading-content ion-spinner {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+}
+
+.loading-content p {
+  color: #34495e;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* ===== MODAL DE RUTAS ===== */
+.custom-modal {
+  --border-radius: 25px 25px 0 0;
+  --height: 80%;
+}
+
+.modal-actions {
+  margin-bottom: 20px;
+}
+
+.refresh-btn {
+  --border-radius: 16px;
   --padding-top: 16px;
   --padding-bottom: 16px;
   font-weight: 600;
 }
 
-/* ===== MODALES ELEGANTES ===== */
-.custom-modal {
-  --border-radius: 24px 24px 0 0;
-  --background: white;
+.routes-list {
+  margin-bottom: 20px;
 }
 
-.modal-container {
-  padding: 24px;
-  background: white;
-}
-
-.modal-header {
-  text-align: center;
-  margin-bottom: 24px;
-  position: relative;
-}
-
-.modal-handle {
-  width: 48px;
-  height: 5px;
-  background: #cbd5e1;
-  border-radius: 3px;
-  margin: 0 auto 16px;
-}
-
-.modal-header h2 {
-  margin: 0;
-  color: #1e293b;
-  font-size: 22px;
-  font-weight: 700;
-}
-
-/* Formularios en modales */
-.info ion-item {
-  --background: #f8fafc;
+.route-item {
   --border-radius: 12px;
   --padding-start: 16px;
-  margin-bottom: 16px;
-  border: 1px solid #e2e8f0;
+  --padding-end: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #e3e8ef;
 }
 
-.info ion-input, 
-.info ion-select {
-  --padding-start: 0;
-  --padding-end: 0;
-}
-
-.btn {
-  margin-top: 24px;
-}
-
-.btn ion-button {
-  --background: linear-gradient(135deg, #10b981, #059669);
-  --border-radius: 16px;
-  --padding-top: 18px;
-  --padding-bottom: 18px;
-  font-weight: 600;
-  font-size: 16px;
-}
-
-/* ===== LOADING SPINNER MEJORADO ===== */
-.loading-spinner {
+.route-actions {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
+  gap: 5px;
+}
+
+.no-routes {
   text-align: center;
-  
-  ion-spinner {
-    margin-bottom: 10px;
-    color: #10b981;
-  }
-  
-  p {
-    font-size: 16px;
-    color: #64748b;
-    margin: 0;
-    font-weight: 500;
-  }
+  padding: 40px 20px;
 }
 
-/* ===== ESTILOS ADICIONALES ===== */
-.find {
-  display: flex;
-  justify-content: space-between;
-  
-  .find-icon {
-    font-size: 24px;
-  }
+.no-routes ion-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
 }
 
-/* Estilos para el botón de modo oscuro */
-ion-button[slot="end"] {
-  --color: var(--ion-text-color);
+.no-routes p {
+  color: #7f8c8d;
+  margin: 8px 0;
 }
 
-/* Transición suave para el cambio de tema */
-body, ion-card, ion-item, ion-toolbar {
-  transition: background-color 0.3s ease, color 0.3s ease;
+.hint {
+  font-size: 14px;
+  color: #bdc3c7;
 }
 
-/* Estilos para los items de rutas en la lista */
-ion-item {
-  --border-radius: 8px;
-  margin-bottom: 8px;
+.close-modal-btn {
+  --border-radius: 16px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  margin-top: 10px;
 }
 
-/* Mejoras visuales para las tarjetas */
-ion-card {
-  margin: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-ion-card-header {
-  padding-bottom: 0;
-}
-
-ion-card-title {
-  display: flex;
-  justify-content: space-between;
-  font-size: 1.1em;
-  font-weight: 600;
-}
-
-/* Estilos para los badges */
-ion-badge {
-  font-size: 0.8em;
-  font-weight: 600;
-}
-
-/* Estilos para el textarea del JSON */
-ion-textarea {
-  background: #f8f9fa;
-  border-radius: 8px;
-  --padding-start: 12px;
-  --padding-end: 12px;
-}
-
-/* Mejoras para los botones */
-ion-button {
-  --border-radius: 8px;
-}
-
-/* Estado deshabilitado mejorado */
-ion-button[disabled] {
-  opacity: 0.6;
-}
-
-/* ===== RESPONSIVE DESIGN ===== */
-
-/* Pantallas muy pequeñas (hasta 320px) */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 320px) {
-  ion-footer {
-    height: 55px;
+  .map-container {
+    height: 60vh;
   }
   
-  ion-toolbar {
-    --min-height: 55px;
+  .secondary-controls {
+    grid-template-columns: repeat(2, 1fr);
   }
   
-  ion-segment {
-    padding: 2px 4px;
+  .map-floating-buttons {
+    padding: 8px;
   }
   
-  ion-segment-button {
-    --padding-start: 4px;
-    --padding-end: 4px;
-    min-height: 40px;
-    
-    ion-icon {
-      font-size: 16px !important;
-    }
-    
-    ion-label {
-      font-size: 9px !important;
-    }
-  }
-  
-  ion-content {
-    --padding-bottom: 55px;
-  }
-  
-  .content-container {
-    padding-bottom: 55px;
-    min-height: calc(100vh - 55px);
-  }
-  
-  .conductores,
-  .vehiculos {
-    width: 95%;
-    padding-top: 5%;
-  }
-  
-  .conductor-title ion-text {
-    font-size: 20px;
+  .map-eye-button,
+  .map-locate-button {
+    width: 40px;
+    height: 40px;
   }
 }
 
-/* Tablets (768px+) */
 @media (min-width: 768px) {
-  ion-segment-button {
-    --padding-start: 10px;
-    --padding-end: 10px;
-    min-height: 48px;
-    
-    ion-icon {
-      font-size: 20px !important;
-    }
-    
-    ion-label {
-      font-size: 11px !important;
-    }
+  .map-container {
+    height: 70vh;
   }
   
-  .conductores,
-  .vehiculos {
-    width: 70%;
+  .control-panel {
     max-width: 600px;
+    margin: -20px auto 0;
+    border-radius: 25px;
   }
   
-  #mapId {
-    height: 50vh !important;
+  .secondary-controls {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
-/* Pantallas grandes (1024px+) */
-@media (min-width: 1024px) {
-  .conductores,
-  .vehiculos {
-    width: 50%;
-    max-width: 500px;
-  }
-}
-
-/* Orientación landscape */
+/* Orientación landscape móvil */
 @media (max-height: 500px) and (orientation: landscape) {
-  .conductores {
-    min-height: 60vh;
-    padding-top: 2%;
+  .map-container {
+    height: 55vh;
   }
   
-  .logoUser {
-    padding-top: 5%;
+  .control-panel {
+    padding: 15px;
   }
   
-  .icon {
-    width: 80px;
-    height: 80px;
+  .record-button {
+    height: 48px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
   }
   
-  .btnlogout-section {
-    position: relative;
-    bottom: auto;
-    padding: 16px;
+  .action-btn {
+    height: 42px;
+    font-size: 12px;
   }
 }
 
-/* ===== MEJORAS DE ACCESIBILIDAD ===== */
-
-/* Safe Areas para iOS */
-@supports (padding: max(0px)) {
-  .btnlogout-section {
-    padding-left: max(20px, env(safe-area-inset-left));
-    padding-right: max(20px, env(safe-area-inset-right));
-    padding-bottom: max(20px, env(safe-area-inset-bottom));
+/* Modo oscuro */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ion-background-color: #1a1a2e;
   }
   
-  ion-footer {
-    padding-bottom: env(safe-area-inset-bottom);
+  .control-panel {
+    background: #16213e;
+  }
+  
+  .route-name-card {
+    background: #0f3460;
+    border-color: #1a5a9c;
+  }
+  
+  .status-panel {
+    background: rgba(26, 26, 46, 0.95);
+  }
+  
+  .status-text {
+    color: #ecf0f1;
+  }
+  
+  .json-preview {
+    background: #0f3460;
+    border-color: #1a5a9c;
+  }
+  
+  .json-header {
+    background: #1a5a9c;
   }
 }
 
-/* Reducción de movimiento */
-@media (prefers-reduced-motion: reduce) {
-  ion-item, 
-  ion-button, 
-  ion-card,
-  ion-segment-button {
-    transition: none;
-    transform: none !important;
-  }
+/* Scroll personalizado */
+.json-content::-webkit-scrollbar,
+.lista-container::-webkit-scrollbar {
+  width: 6px;
 }
 
-/* Alto contraste */
-@media (prefers-contrast: high) {
-  ion-item {
-    border-width: 2px;
-  }
-  
-  .modal-handle {
-    background: var(--ion-color-dark);
-  }
-  
-  ion-segment-button {
-    --border-width: 2px;
-  }
+.json-content::-webkit-scrollbar-track,
+.lista-container::-webkit-scrollbar-track {
+  background: #34495e;
+  border-radius: 10px;
 }
 
-/* Efectos de animación suaves */
-ion-item, 
-ion-button, 
-ion-card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.json-content::-webkit-scrollbar-thumb,
+.lista-container::-webkit-scrollbar-thumb {
+  background: #3498db;
+  border-radius: 10px;
 }

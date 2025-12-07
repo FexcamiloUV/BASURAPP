@@ -1,70 +1,109 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonButton, IonList, IonIcon, IonItem, LoadingController, IonSelectOption, IonModal, IonLabel } from '@ionic/angular/standalone';
-import { Vehiculos } from 'src/interfaces/vehiculos';
-import { CargaDatos } from '../../../service/datos/cargar-datos';
-import { Alerts } from 'src/service/alerts/alerts';
+import { Component, inject, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
+import {
+  IonContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  IonText,
+  IonButton,
+  IonList,
+  IonIcon,
+  IonItem,
+  LoadingController,
+  IonSelectOption,
+  IonModal,
+  IonLabel,
+  NavController,
+  IonSelect,
+  IonInput,
+} from "@ionic/angular/standalone";
+import { Vehiculos } from "src/interfaces/vehiculos";
+import { CargaDatos } from "../../../service/datos/cargar-datos";
+import { Alerts } from "src/service/alerts/alerts";
 
 @Component({
-  selector: 'app-vehiculos',
-  templateUrl: './vehiculos.page.html',
-  styleUrls: ['./vehiculos.page.scss'],
+  selector: "app-vehiculos",
+  templateUrl: "./vehiculos.page.html",
+  styleUrls: ["./vehiculos.page.scss"],
   standalone: true,
-  imports: [IonLabel, IonModal, ReactiveFormsModule, IonItem, IonIcon, IonList, IonButton, IonText, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonSelectOption]
+  imports: [
+    IonLabel,
+    IonModal,
+    ReactiveFormsModule,
+    IonItem,
+    IonIcon,
+    IonList,
+    IonButton,
+    IonText,
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    CommonModule,
+    FormsModule,
+    IonSelectOption,
+    IonSelect, 
+    IonInput
+  ],
 })
 export class VehiculosPage implements OnInit {
-    vehiculo! : Vehiculos[];
-    
-      modalVehiculo = false;
+  vehiculo: Vehiculos[]= [];
 
-      anos = ['2019', '2020', '2021', '2022', '2023', '2024'];
+  modalVehiculo = false;
 
-      vehiculoModal = false;
-        vehiculoForm!: FormGroup;
-        private loadingController = inject(LoadingController);
-        private alerts = inject(Alerts);
+  anos = ["2019", "2020", "2021",];
+  perfilId = "c14fb089-0812-4ba8-8a35-32ba08e35ce6"
+  vehiculoModal = false;
+  vehiculoForm!: FormGroup;
+  private loadingController = inject(LoadingController);
+  private alerts = inject(Alerts);
+  private nav = inject(NavController);
+  vehiculoData: Vehiculos | null = null;
+  private CargaDatos = inject(CargaDatos);
 
-      vehiculoData: Vehiculos | null = null;
-      private CargaDatos = inject(CargaDatos);
-      
+  constructor() {}
 
-  
-
-  constructor() { }
-
-  ngOnInit() {
+ async ngOnInit() {
+    this.vehiculoForm = new FormGroup({
+    placa: new FormControl('', [Validators.required]),
+    marca: new FormControl('', [Validators.required]),
+    modelo: new FormControl('', [Validators.required]),
+    activo: new FormControl(true, [Validators.required]),
+    perfil_id: new FormControl(this.perfilId, [Validators.required]),
+  });
+    await this.obtenerVehiculos();
   }
 
+  back() {
+    this.nav.back();
+  }
 
-
-  cerrarModalVehiculo(){
+  cerrarModalVehiculo() {
     this.vehiculoModal = false;
   }
 
-    abriModalVehiculo(){
+  abriModalVehiculo() {
     this.modalVehiculo = true;
   }
-  CerrarVehiculo(){
+  CerrarVehiculo() {
     this.modalVehiculo = false;
   }
-   vehiculoModalOpen(){
+  vehiculoModalOpen() {
     this.vehiculoModal = true;
   }
-    async verVehiculo(id: string) {
+  async verVehiculo(id: string) {
     this.vehiculoData = await this.CargaDatos.obtenerVehiculoPorId(id);
     this.vehiculoModalOpen();
   }
 
-
-
-   async obtenerVehiculos() {
+  async obtenerVehiculos() {
     this.vehiculo = await this.CargaDatos.obtenerVehiculos();
     console.log("Vehículos Disponibles", this.vehiculo);
   }
 
-
-   async registrarVehiculo() {
+  async registrarVehiculo() {
     const formValue = this.vehiculoForm.value;
 
     if (this.vehiculoForm.invalid) {
@@ -73,20 +112,20 @@ export class VehiculosPage implements OnInit {
     }
 
     const loading = await this.loadingController.create({
-      message: 'Registrando Vehículo...',
+      message: "Registrando Vehículo...",
     });
 
     await loading.present();
-    
+
     try {
       await this.CargaDatos.registrarVehiculo(formValue);
       await loading.dismiss();
       this.vehiculoForm.reset();
-      console.log('Vehículo registrado con éxito', formValue);
+      await this.obtenerVehiculos();
+      console.log("Vehículo registrado con éxito", formValue);
     } catch (error) {
       await loading.dismiss();
-      console.error('Error registrando vehículo:', error);
+      console.error("Error registrando vehículo:", error);
     }
   }
-
 }

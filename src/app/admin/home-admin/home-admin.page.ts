@@ -27,7 +27,7 @@ import {
   personOutline,
   personRemoveOutline,
   logOut, camera, ellipsisVertical, personCircle, settings, shieldCheckmark, menu, navigate, 
-  person} from "ionicons/icons";
+  person, list, people, arrowForward, car, addCircle, personAdd, carSport, documentText, search, radioButtonOn, pricetag, save, folderOpen, time, analytics, mapOutline, informationCircle, mail, call, calendar, lockClosed, language, statsChart, flag, code } from "ionicons/icons";
 import { CargaDatos } from "src/service/datos/cargar-datos";
 import { Geolocation } from "@capacitor/geolocation";
 import Map from "ol/Map";
@@ -152,7 +152,7 @@ export class HomeAdminPage implements OnInit {
   private document = inject(DOCUMENT);
 
   constructor() {
-    addIcons({logOut,person,settings,menu,notifications,download,copy,trash,close,refresh,locate,navigate,personRemoveOutline,personCircle,shieldCheckmark,home,map,personOutline,ellipsisVertical,add,location,camera,document,play,stop,wifi,sunny,moon,eyeOff,eye,});
+    addIcons({menu,mapOutline,eye,notifications,locate,flag,save,trash,code,close,refresh,map,personCircle,home,list,person,logOut,shieldCheckmark,people,arrowForward,car,addCircle,personAdd,carSport,documentText,search,radioButtonOn,pricetag,folderOpen,location,time,analytics,informationCircle,mail,call,calendar,settings,moon,lockClosed,language,statsChart,download,copy,navigate,personRemoveOutline,personOutline,ellipsisVertical,add,camera,document,play,stop,wifi,sunny,eyeOff,});
   }
 
   async ngOnInit() {
@@ -192,7 +192,6 @@ onSegmentChange(event: any) {
     }, 300);
   }
 }
-
 
 
 

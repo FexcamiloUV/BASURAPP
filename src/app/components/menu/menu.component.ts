@@ -1,58 +1,33 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { IonApp, IonRouterOutlet, IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonMenuToggle, IonItem, IonIcon, IonLabel, AlertController, NavController } from '@ionic/angular/standalone';
-import { RouterLink } from '@angular/router';
-import { addIcons } from 'ionicons';
-import { home, person, logOut, personOutline, carOutline, peopleOutline } from 'ionicons/icons';
-import Map from "ol/Map";
+import { IonApp, IonMenu, IonHeader, IonIcon, IonToolbar, IonContent, IonRouterOutlet, IonItem, IonTitle, IonLabel, IonList, IonMenuToggle, NavController, AlertController } from "@ionic/angular/standalone";
 import { AuthService } from 'src/service/Auth/auth-service';
-import { MenuComponent } from "./components/menu/menu.component";
+import Map from "ol/Map";
+
 
 @Component({
-  selector: 'app-root',
-  templateUrl: 'app.component.html',
-  imports: [
-    IonApp,
-    IonRouterOutlet,
-    IonMenu,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonList,
-    IonMenuToggle,
-    IonItem,
-    IonIcon,
-    IonLabel,
-    RouterLink,
-    MenuComponent
-],
+  selector: 'app-menu',
+  templateUrl: './menu.component.html',
+  styleUrls: ['./menu.component.scss'],
+  standalone: true,
+  imports: [IonList, IonLabel, IonTitle, IonItem, IonRouterOutlet, IonContent, IonToolbar, IonIcon, IonHeader, IonApp, IonMenu, IonMenuToggle],
 })
-export class AppComponent implements OnInit {
-  private authService = inject(AuthService)
-    private map: Map | undefined;
+export class MenuComponent  implements OnInit {
+    private authService = inject(AuthService)
     private nav = inject(NavController)
     private alertController = inject(AlertController);
-  
-    userName = "";
-  isLoading: boolean | undefined;
-  markerLayer: any;
+      isLoading: boolean | undefined;
+        markerLayer: any;
   routeLayer: any;
   rutasLayer: any;
+      private map: Map | undefined;
 
-  constructor() {
-    addIcons({ home, person, logOut, peopleOutline, carOutline });
-  }
-  async ngOnInit(){
-    await this.loadUserData()
-  }
 
-  IrAVehiculos(){
-  this.nav.navigateForward('vehiculos')
-}
+  
 
-irAConductores(){
-  this.nav.navigateForward('conductores')
-}
+  constructor() { }
+
+  ngOnInit() {}
+
 
 
    async logout() {
@@ -119,9 +94,4 @@ irAConductores(){
     await alert.present();
   }
 
-
-
-  async loadUserData() {
-    this.userName = await this.authService.getUserName();
-  }
 }

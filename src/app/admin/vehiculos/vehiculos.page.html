@@ -1,5 +1,7 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <ion-toolbar color="success">
+    <ion-button  slot="start" (click)="back()" fill="clear">
+<ion-icon class="back" name="arrow-back-outline"></ion-icon>    </ion-button>
   </ion-toolbar>
 </ion-header>
 
@@ -8,32 +10,32 @@
     <ion-toolbar>
     </ion-toolbar>
   </ion-header>
-   <div class="vehiculos">
-      <div class="conductor-title">
-        <ion-text style="font-size: 22px;">Lista de Vehículos</ion-text>
-      </div>
-      
-      <!-- CONTENEDOR PARA LIMITAR A 3 ELEMENTOS -->
-      <div class="lista-container">
-        <ion-list>
-          <ion-item button="true" (click)="verVehiculo(vehiculo.id)" class="info" *ngFor="let vehiculo of vehiculo">
-            <ion-text class="name-conductor">{{ vehiculo.marca}}</ion-text>
-            <ion-button size="large" slot="end" fill="clear" color="danger">
-              <ion-icon name="person-remove-outline"></ion-icon>
-            </ion-button>
-          </ion-item>
-        </ion-list>
-      </div>
-      <!-- FIN CONTENEDOR -->
-      
-      <div class="add">
-        <ion-button (click)="abriModalVehiculo()">
-          Agregar Vehículo
-        </ion-button>
-      </div>
+  <div class="vehiculos">
+    <div class="conductor-title">
+      <ion-text style="font-size: 22px;">Lista de Vehículos</ion-text>
     </div>
 
-      <ion-modal [isOpen]="modalVehiculo" (didDismiss)="CerrarVehiculo()" [initialBreakpoint]="0.60"
+    <!-- CONTENEDOR PARA LIMITAR A 3 ELEMENTOS -->
+    <div class="lista-container">
+      <ion-list>
+        <ion-item button="true" (click)="verVehiculo(vehiculo.id)" class="info" *ngFor="let vehiculo of vehiculo">
+          <ion-text class="name-conductor">{{ vehiculo.marca}}</ion-text>
+          <ion-button size="large" slot="end" fill="clear" color="danger">
+            <ion-icon name="person-remove-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+    </div>
+    <!-- FIN CONTENEDOR -->
+
+    <div class="add">
+      <ion-button (click)="abriModalVehiculo()">
+        Agregar Vehículo
+      </ion-button>
+    </div>
+  </div>
+
+  <ion-modal [isOpen]="modalVehiculo" (didDismiss)="CerrarVehiculo()" [initialBreakpoint]="0.60"
     [breakpoints]="[0.25, 0.5, 0.60]" class="custom-modal">
     <ng-template>
       <div class="modal-container">
@@ -47,8 +49,8 @@
           </ion-item>
           <ion-item>
             <ion-select aria-label="Fruit" interface="popover" placeholder="Selecciona Marca" formControlName="marca">
-              <ion-select-option value="Heil">Heil</ion-select-option>
-              <ion-select-option value="McNeilus">McNeilus</ion-select-option>
+              <ion-select-option value="Heil">Mazda</ion-select-option>
+              <ion-select-option value="McNeilus">Kewort</ion-select-option>
               <ion-select-option value="Mercedez-Benz">Mercedez-Benz</ion-select-option>
             </ion-select>
           </ion-item>
@@ -67,7 +69,7 @@
     </ng-template>
   </ion-modal>
 
-    <!-- Modal para ver info del vehiculo -->
+  <!-- Modal para ver info del vehiculo -->
   <ion-modal [isOpen]="vehiculoModal" (didDismiss)="cerrarModalVehiculo()" [initialBreakpoint]="0.60"
     [breakpoints]="[0.25, 0.5, 0.60]" class="custom-modal">
     <ng-template>

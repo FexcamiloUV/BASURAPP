@@ -29,8 +29,7 @@ import {
   IonMenuToggle,
   IonMenuButton,
   IonSegment,
-  IonSegmentButton,
-} from "@ionic/angular/standalone";
+  IonSegmentButton, IonListHeader, IonRouterOutlet, IonApp } from "@ionic/angular/standalone";
 import { Geolocation } from "@capacitor/geolocation";
 import Map from "ol/Map";
 import View from "ol/View";
@@ -67,13 +66,13 @@ import {
   play,
   stop,
   radio,
-  cellular,
-} from "ionicons/icons";
+  cellular, locate, layers, options, playCircle, settings, chevronDown, alertCircle, close, personCircle, helpCircle, chatbubbles } from "ionicons/icons";
 import { AuthService } from "src/service/Auth/auth-service";
 
 // Importar Supabase
 import { createClient, RealtimeChannel } from '@supabase/supabase-js';
 import { environment } from "src/environments/environment";
+import { MenuComponent } from "src/app/components/menu/menu.component";
 
 interface PuntoRecorrido {
   id: number;
@@ -105,7 +104,7 @@ interface Posicion {
   templateUrl: "./home-conductor.page.html",
   styleUrls: ["./home-conductor.page.scss"],
   standalone: true,
-  imports: [
+  imports: [IonApp, IonRouterOutlet, IonListHeader,
     IonItem,
     IonList,
     IonSpinner,
@@ -133,10 +132,25 @@ interface Posicion {
     FormsModule,
     IonMenu,
     IonMenuToggle,
-    IonMenuButton,
-  ],
+    IonMenuButton, MenuComponent],
 })
 export class HomeConductorPage implements OnInit, OnDestroy {
+  private mapaCentrado: boolean = false;
+  private vistaSatelital: boolean = false;
+  
+  // Variables de notificaciones
+  notificacionesPendientes: number = 0;
+  private notificationInterval: any;
+  
+  // Variables de ejemplo para las notificaciones
+  private mockNotifications = [
+    { id: 1, mensaje: 'Nueva ruta asignada', leida: false },
+    { id: 2, mensaje: 'Recordatorio: Revisión de vehículo', leida: false },
+    { id: 3, mensaje: 'Alerta meteorológica en tu zona', leida: false },
+    { id: 4, mensaje: 'Mensaje del administrador', leida: false },
+    { id: 5, mensaje: 'Actualización del sistema disponible', leida: true }
+  ];
+
   isLoading = true;
   cargandoRutas = false;
   private datos = inject(CargaDatos);
@@ -184,7 +198,6 @@ export class HomeConductorPage implements OnInit, OnDestroy {
   private isWebSocketConnected = false;
   private lastSentLocation: { lat: number; lng: number } | null = null;
   private minDistanceForUpdate = 10; // metros mínimos para enviar actualización
-
   // ⏰ Temporizador de prueba de 5 minutos
   private pruebaTimer: any;
   public tiempoRestante: number = 300; // 5 minutos en segundos
@@ -194,29 +207,10 @@ export class HomeConductorPage implements OnInit, OnDestroy {
   private rutaCompletada: boolean = false;
   public progresoRuta: number = 0; // Porcentaje de progreso
   public distanciaAlFinal: number = 0; // Distancia al punto final en metros
+  menuCtrl: any;
 
   constructor() {
-    addIcons({
-      person,
-      map,
-      logOut,
-      menu,
-      navigate,
-      notifications,
-      carSport,
-      informationCircle,
-      pulse,
-      time,
-      trailSign,
-      location,
-      speedometer,
-      people,
-      car,
-      play,
-      stop,
-      radio,
-      cellular,
-    });
+    addIcons({close,personCircle,time,trailSign,navigate,map,carSport,settings,helpCircle,informationCircle,chatbubbles,logOut,menu,radio,notifications,options,playCircle,chevronDown,car,location,alertCircle,speedometer,locate,layers,person,pulse,people,play,stop,cellular,});
 
     // Inicializar Supabase (REEMPLAZA CON TUS CREDENCIALES REALES)
     this.initializeSupabase();
@@ -279,6 +273,10 @@ private limpiarTodasLasCapas() {
     this.stopLocationTracking();
     this.detenerRecorrido();
     this.detenerTemporizadorPrueba();
+      // Limpiar intervalos
+    if (this.notificationInterval) {
+      clearInterval(this.notificationInterval);
+    }
   }
 
   // ==================== SELECTOR DE MODO DE OPERACIÓN ====================
@@ -429,10 +427,7 @@ private limpiarTodasLasCapas() {
     this.modoOperacion = nuevoModo;
     console.log(`Modo cambiado a: ${this.modoOperacion}`);
     
-    await this.mostrarAlerta(
-      'Modo Cambiado',
-      `Ahora estás en modo: ${this.modoOperacion === 'tiempo-real' ? 'En tiempo Real ' : 'Simulación '}`
-    );
+
   }
 
   // ==================== SEGUIMIENTO DE PROGRESO DE RUTA ====================
@@ -653,6 +648,10 @@ private limpiarTodasLasCapas() {
     }
   }
 
+    closeMenu(): void {
+    this.menuCtrl.close('main-menu');
+  }
+
   private cleanupWebSocketConnection() {
     if (this.ubicacionChannel) {
       this.supabase.removeChannel(this.ubicacionChannel);
@@ -721,7 +720,7 @@ private async handleNewLocation(position: any) {
   
   // Solo procesar si estamos en modo tiempo real
   if (this.modoOperacion !== 'tiempo-real') {
-    console.log('⚠️ No es modo tiempo-real, ignorando');
+    console.log(' No es modo tiempo-real, ignorando');
     return;
   }
 
@@ -733,7 +732,7 @@ private async handleNewLocation(position: any) {
     timestamp: new Date(position.timestamp)
   };
 
-  console.log('📍 newLocation creado:', {
+  console.log('newLocation creado:', {
     lat: newLocation.lat,
     lng: newLocation.lng,
     'lat tipo': typeof newLocation.lat,
@@ -860,15 +859,15 @@ private async sendToExternalAPI(location: any): Promise<any> {
     perfil_id: this.perfilId
   };
 
-  console.log('🚀 Enviando posicion:', posicion);
-  console.log('📝 JSON:', JSON.stringify(posicion));
+  console.log(' Enviando posicion:', posicion);
+  console.log(' JSON:', JSON.stringify(posicion));
 
   try {
     const resultado = await this.datos.enviarPosicion(this.recorridoId, posicion);
-    console.log('✅ Resultado:', resultado);
+    console.log(' Resultado:', resultado);
     return resultado;
   } catch (error) {
-    console.error('❌ Error:', error);
+    console.error(' Error:', error);
     return null;
   }
 }
@@ -893,7 +892,7 @@ private async sendToExternalAPI(location: any): Promise<any> {
       this.simularMovimiento();
     }, 2000); // 2 segundos entre puntos
 
-    console.log('🚗 Simulación iniciada - Moviéndose por la ruta...');
+    console.log('Simulación iniciada - Moviéndose por la ruta...');
   }
 
   private async simularMovimiento() {
@@ -901,7 +900,7 @@ private async sendToExternalAPI(location: any): Promise<any> {
     if (this.modoOperacion !== 'simulacion') return;
 
     if (this.indicePuntoActual >= this.puntosRutaActual.length - 1) {
-      console.log("🏁 Simulación completada - Llegó al final de la ruta");
+      console.log("Simulación completada - Llegó al final de la ruta");
       await this.finRecorrido();
       return;
     }
@@ -933,7 +932,7 @@ private async sendToExternalAPI(location: any): Promise<any> {
       timestamp: new Date().toISOString()
     };
 
-    console.log('🎮 Ubicación simulada enviada:', ubicacionSimulada);
+    console.log(' Ubicación simulada enviada:', ubicacionSimulada);
   }
 
   // ==================== MÉTODOS COMUNES ====================
@@ -948,7 +947,7 @@ private async sendToExternalAPI(location: any): Promise<any> {
     // Limpiar WebSocket
     this.cleanupWebSocketConnection();
 
-    console.log('📍 Seguimiento de ubicación detenido');
+    console.log(' Seguimiento de ubicación detenido');
   }
 
   private stopSimulation() {
@@ -958,12 +957,12 @@ private async sendToExternalAPI(location: any): Promise<any> {
       this.recorridoInterval = null;
     }
 
-    console.log('🎮 Simulación detenida');
+    console.log('Simulación detenida');
   }
 
   private async iniciarRecorridoRuta() {
     if (this.puntosRutaActual.length === 0) {
-      console.error("❌ No hay puntos en la ruta seleccionada");
+      console.error(" No hay puntos en la ruta seleccionada");
       return;
     }
 
@@ -975,12 +974,12 @@ private async sendToExternalAPI(location: any): Promise<any> {
         perfil_id: this.perfilId,
       };
 
-      console.log("📡 Enviando datos al servidor:", recorridoData);
+      console.log(" Enviando datos al servidor:", recorridoData);
 
       const response = await this.datos.iniciarRecorrido(recorridoData);
 
       this.recorridoId = response.id || response.recorrido_id;
-      console.log("✅ Recorrido iniciado en servidor. ID:", this.recorridoId);
+      console.log("Recorrido iniciado en servidor. ID:", this.recorridoId);
 
       // 2. INICIAR SEGUIMIENTO SEGÚN EL MODO
       if (this.modoOperacion === 'tiempo-real') {
@@ -1293,5 +1292,204 @@ private async sendToExternalAPI(location: any): Promise<any> {
     async obtenerVehiculos() {
     this.vehiculo = await this.cargaDatos.obtenerVehiculos();
     console.log("Vehiculos Disponibles", this.vehiculo);
+  }
+
+ 
+
+  
+
+  iniciarNotificaciones(): void {
+    // Solicitar permiso para notificaciones
+    this.solicitarPermisoNotificaciones();
+    
+    // Simular notificaciones periódicas (para demo)
+    this.notificationInterval = setInterval(() => {
+      this.simularNuevaNotificacion();
+    }, 30000); // Cada 30 segundos
+
+    // Cargar notificaciones pendientes iniciales
+    this.cargarNotificacionesPendientes();
+  }
+
+  /**
+   * Solicita permiso para mostrar notificaciones
+   */
+  async solicitarPermisoNotificaciones(): Promise<void> {
+    if ('Notification' in window) {
+      const permission = await Notification.requestPermission();
+      
+      if (permission === 'granted') {
+        console.log('Permiso para notificaciones concedido');
+        this.crearNotificacionBienvenida();
+      } else {
+        console.log('Permiso para notificaciones denegado');
+      }
+    }
+  }
+
+  /**
+   * Carga las notificaciones pendientes
+   */
+  cargarNotificacionesPendientes(): void {
+    // Filtrar notificaciones no leídas
+    const pendientes = this.mockNotifications.filter(notif => !notif.leida);
+    this.notificacionesPendientes = pendientes.length;
+    
+    // Actualizar el badge en el icono
+    this.actualizarBadgeNotificaciones();
+  }
+
+  /**
+   * Simula una nueva notificación (para demo)
+   */
+  simularNuevaNotificacion(): void {
+    // Solo si hay permiso
+    if (Notification.permission === 'granted') {
+      const mensajes = [
+        'Nueva actualización disponible',
+        'Recordatorio: Revisa tu ruta asignada',
+        'Alerta: Condiciones climáticas cambiantes',
+        'Mensaje nuevo del sistema',
+        '¡Buen trabajo! Has completado 5 rutas esta semana'
+      ];
+      
+      const mensajeAleatorio = mensajes[Math.floor(Math.random() * mensajes.length)];
+      
+      // Crear notificación
+      const notificacion = new Notification('Seguimiento GPS', {
+        body: mensajeAleatorio,
+        icon: 'assets/icon/notification-icon.png',
+        badge: 'assets/icon/badge.png'
+      });
+      
+      // Añadir a la lista de notificaciones
+      this.mockNotifications.unshift({
+        id: Date.now(),
+        mensaje: mensajeAleatorio,
+        leida: false
+      });
+      
+      // Actualizar contador
+      this.notificacionesPendientes++;
+      this.actualizarBadgeNotificaciones();
+      
+      // Reproducir sonido (opcional)
+      this.reproducirSonidoNotificacion();
+      
+      // Cerrar notificación después de 5 segundos
+      setTimeout(() => notificacion.close(), 5000);
+    }
+  }
+
+  /**
+   * Crea una notificación de bienvenida
+   */
+  crearNotificacionBienvenida(): void {
+    if (Notification.permission === 'granted') {
+      new Notification('Bienvenido al Seguimiento GPS', {
+        body: 'Tu aplicación está lista para usar',
+        icon: 'assets/icon/favicon.png'
+      });
+    }
+  }
+
+  /**
+   * Actualiza el badge de notificaciones
+   */
+  actualizarBadgeNotificaciones(): void {
+    // Actualizar el badge en el DOM
+    const badgeElement = document.querySelector('.notification-badge') as HTMLElement;
+    if (badgeElement) {
+      if (this.notificacionesPendientes > 0) {
+        badgeElement.style.display = 'block';
+      } else {
+        badgeElement.style.display = 'none';
+      }
+    }
+    
+    // También podrías usar la API de Badging si está disponible
+    if ('setAppBadge' in navigator) {
+      (navigator as any).setAppBadge(this.notificacionesPendientes);
+    }
+  }
+
+  /**
+   * Reproduce un sonido de notificación
+   */
+  reproducirSonidoNotificacion(): void {
+    const audio = new Audio('assets/sounds/notification.mp3');
+    audio.volume = 0.3;
+    audio.play().catch(e => console.log('Error reproduciendo sonido:', e));
+  }
+
+  /**
+   * Marca todas las notificaciones como leídas
+   */
+  marcarTodasComoLeidas(): void {
+    this.mockNotifications.forEach(notif => notif.leida = true);
+    this.notificacionesPendientes = 0;
+    this.actualizarBadgeNotificaciones();
+  }
+
+  /**
+   * Muestra las notificaciones en un modal
+   */
+  async mostrarNotificaciones(): Promise<void> {
+    // Aquí podrías implementar un modal para mostrar las notificaciones
+    console.log('Mostrando notificaciones:', this.mockNotifications);
+    
+    // Marcar como leídas al abrir
+    this.marcarTodasComoLeidas();
+  }
+
+  // ===== MÉTODOS DE UTILIDAD =====
+
+  /**
+   * Muestra un toast/mensaje temporal
+   * @param mensaje Mensaje a mostrar
+   */
+  mostrarToast(mensaje: string): void {
+    // Podrías implementar esto con un toastController
+    console.log('Toast:', mensaje);
+    
+    // Implementación simple con alert (reemplazar con toastController en producción)
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      z-index: 10000;
+      font-size: 14px;
+      animation: fadeInOut 3s ease;
+    `;
+    
+    toast.textContent = mensaje;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 3000);
+  }
+
+  /**
+   * Muestra un mensaje de error
+   * @param mensaje Mensaje de error
+   */
+  mostrarError(mensaje: string): void {
+    console.error('Error:', mensaje);
+    this.mostrarToast(`❌ ${mensaje}`);
+  }
+
+  
+
+  /**
+   * Método para manejar el clic en el botón de notificaciones
+   */
+  async onNotificationClick(): Promise<void> {
+    await this.mostrarNotificaciones();
   }
 }

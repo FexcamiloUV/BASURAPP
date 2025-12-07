@@ -1,293 +1,291 @@
-<ion-menu side="start" menuId="conductor-menu" contentId="home-conductor-content">
-  <ion-header>
-    <ion-toolbar color="success">
-      <ion-title>{{userName}}</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-content>
-    <ion-list>
-      <ion-menu-toggle auto-hide="false">
-        <ion-item (click)="logout()">
-          <ion-icon slot="start" name="log-out"></ion-icon>
-          <ion-label>Cerrar sesión</ion-label>
-        </ion-item>
-      </ion-menu-toggle>
-    </ion-list>
-  </ion-content>
-</ion-menu>
+<ion-app>
 
-<ion-header [translucent]="true" class="header-custom">
-  <ion-toolbar color="success" class="toolbar-gradient">
-    <!-- Botón del menú corregido -->
-    <ion-buttons slot="start">
-      <ion-menu-button menu="conductor-menu" class="menu-button">
-        <ion-icon name="menu" color="light"></ion-icon>
-      </ion-menu-button>
-    </ion-buttons>
+  <!-- CONTENIDO PRINCIPAL CON EL ID QUE COINCIDE -->
+  <div id="main-content">
     
-    <ion-title class="title-custom">
-      <ion-icon name="navigate" class="title-icon"></ion-icon>
-      Recorrido de Rutas
-    </ion-title>
-    
-    <ion-buttons slot="end">
-      <ion-button>
-        <ion-icon name="notifications" color="light"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content id="home-conductor-content" [fullscreen]="true" class="content-custom">
-  <!-- Mapa en la parte superior -->
-  <div class="mapa-container">
-    <div id="mapId" class="mapa"></div>
-  </div>
-
-  <!-- Selector de Modo de Operación -->
-  <div class="section mode-section">
-    <div class="mode-selector">
-      <ion-segment [value]="modoOperacion" (ionChange)="cambiarModoOperacion($event)">
-        <ion-segment-button value="tiempo-real">
-          <ion-icon name="radio"></ion-icon>
-          <ion-label>Tiempo Real</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="simulacion">
-          <ion-icon name="play"></ion-icon>
-          <ion-label>Simulación</ion-label>
-        </ion-segment-button>
-      </ion-segment>
-    </div>
-    
-    <div class="mode-info" *ngIf="modoRecorrido">
-      <ion-badge [color]="modoOperacion === 'tiempo-real' ? 'success' : 'warning'">
-        <ion-icon [name]="modoOperacion === 'tiempo-real' ? 'radio' : 'play'"></ion-icon>
-        {{ modoOperacion === 'tiempo-real' ? 'TIEMPO REAL' : 'SIMULACIÓN' }}
-      </ion-badge>
-      <span class="time-remaining" *ngIf="pruebaActiva">
-      </span>
-    </div>
-
-    <div class="mode-description">
-      <small>
-        <ion-icon [name]="modoOperacion === 'tiempo-real' ? 'radio' : 'play'" 
-                  [color]="modoOperacion === 'tiempo-real' ? 'success' : 'warning'"></ion-icon>
-        {{ modoOperacion === 'tiempo-real' ? 
-           'Usa tu ubicación GPS real para el seguimiento en tiempo real' : 
-           'Movimiento automático para pruebas y demostraciones' }}
-      </small>
-    </div>
-  </div>
-
-  <!-- Selectores debajo del mapa -->
-  <div class="section selectores-section">
-    <div class="selectors-grid">
-      <!-- Selector de Ruta -->
-      <div class="selector-card route-selector">
-        <div class="selector-content">
-          <label class="selector-label">Selecciona una Ruta</label>
-          <ion-select 
-            placeholder="Elige tu ruta..." 
-            (ionChange)="seleccionarRuta($event)" 
-            interface="popover"
-            class="custom-select">
-            <ion-select-option *ngFor="let ruta of rutasGuardadas" [value]="ruta.id">
-              {{ ruta.nombre_ruta }}
-            </ion-select-option>
-          </ion-select>
-        </div>
-
-        <!-- Selector de Vehículo -->
-        <div class="selector-content">
-          <label class="selector-label">Selecciona un Vehículo</label>
-          <ion-select 
-            (ionChange)="seleccionarVehiculo($event)" 
-            placeholder="Elige tu vehículo..." 
-            interface="popover"
-            class="custom-select">
-            <ion-select-option *ngFor="let vehiculo of vehiculo" [value]="vehiculo.id">
-              {{ vehiculo.marca }} - {{ vehiculo.placa }}
-            </ion-select-option>
-          </ion-select>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Información del Recorrido Actual -->
-  <div class="section info-section" *ngIf="rutaSeleccionada">
-    <div class="info-card">
-      <div class="info-header">
-        <div class="route-badge">
-          <ion-icon name="map"></ion-icon>
-          <span>Ruta Activa</span>
-        </div>
-        <div class="vehicle-badge" *ngIf="vehiculoSeleccionado">
-          <ion-icon name="car-sport"></ion-icon>
-          <span>{{ vehiculoSeleccionado.placa }}</span>
-        </div>
-        <div class="mode-badge" *ngIf="modoRecorrido">
-          <ion-badge [color]="modoOperacion === 'tiempo-real' ? 'success' : 'warning'">
-            {{ modoOperacion === 'tiempo-real' ? '📡 REAL' : '🎮 SIM' }}
-          </ion-badge>
-        </div>
-      </div>
-
-      <div class="route-details">
-        <h3 class="route-name">{{ rutaSeleccionada.nombre_ruta }}</h3>
-        <p class="route-description">Recorrido programado con {{ puntosRutaActual?.length || 0 }} puntos de parada</p>
+    <ion-header [translucent]="true" class="header-custom">
+      <ion-toolbar color="primary">
         
-        <!-- Información de progreso mejorada -->
-        <div class="progress-details" *ngIf="modoRecorrido">
-          <div class="progress-item">
-            <ion-icon name="speedometer" color="primary"></ion-icon>
-            <span>Progreso: {{ progresoRuta.toFixed(1) }}%</span>
+        <!-- BOTÓN PARA ABRIR EL MENÚ -->
+        <ion-buttons slot="start">
+        <ion-button fill="clear" slot="start" (click)="logout()">
+          <ion-icon slot="start" name="log-out"></ion-icon>
+        </ion-button>
+          </ion-buttons>
+
+        <div class="header-content">
+          <div class="header-title">
+            <ion-icon name="navigate" class="header-icon"></ion-icon>
+            <span>Seguimiento GPS</span>
           </div>
-          <div class="progress-item">
-            <ion-icon name="location" color="success"></ion-icon>
+          <div class="header-status" *ngIf="modoRecorrido">
+            <ion-badge color="success" class="live-badge">
+              <ion-icon name="radio"></ion-icon>
+              EN VIVO
+            </ion-badge>
           </div>
+        </div>
+        
+        <ion-buttons slot="end">
+          <ion-button class="notification-btn">
+            <ion-icon name="notifications" color="light"></ion-icon>
+            <ion-badge color="danger" *ngIf="notificacionesPendientes > 0" class="notification-badge">
+              {{notificacionesPendientes}}
+            </ion-badge>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+
+    <ion-content [fullscreen]="true" class="content-custom">
+      <div class="map-section">
+        <div id="mapId" class="map-container"></div>
+        <div class="map-overlay-controls">
         </div>
       </div>
 
-      <!-- Progress Bar -->
-      <div class="progress-container" *ngIf="modoRecorrido">
-        <div class="progress-info">
-          <span class="progress-text">Progreso del Recorrido</span>
-          <span class="progress-percentage">{{ progresoRuta.toFixed(1) }}%</span>
+      <div class="control-panel">
+        <div class="mode-selector-card">
+          <div class="section-header">
+            <ion-icon name="options" color="primary"></ion-icon>
+            <h3>Modo de Operación</h3>
+          </div>
+          
+          <ion-segment [value]="modoOperacion" (ionChange)="cambiarModoOperacion($event)" class="mode-segment">
+            <ion-segment-button value="tiempo-real" class="mode-option">
+              <ion-icon name="radio"></ion-icon>
+              <ion-label>Tiempo Real</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="simulacion" class="mode-option">
+              <ion-icon name="play-circle"></ion-icon>
+              <ion-label>Simulación</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+          
+          <div class="mode-description">
+            <p>
+              <ion-icon [name]="modoOperacion === 'tiempo-real' ? 'radio' : 'play-circle'" 
+                      [color]="modoOperacion === 'tiempo-real' ? 'success' : 'warning'"></ion-icon>
+              {{ modoOperacion === 'tiempo-real' ? 
+                'Usando GPS real para seguimiento en tiempo real' : 
+                'Movimiento simulado para pruebas y demostraciones' }}
+            </p>
+          </div>
         </div>
-        <div class="progress-bar">
-          <div class="progress-fill" [style.width.%]="progresoRuta"></div>
+
+        <div class="config-card">
+          <div class="section-header">
+            <ion-icon name="settings" color="primary"></ion-icon>
+            <h3>Configuración del Recorrido</h3>
+          </div>
+          
+          <div class="config-grid">
+            <div class="config-item">
+              <label class="config-label">
+                <ion-icon name="map" color="primary"></ion-icon>
+                Ruta
+              </label>
+              <div class="select-wrapper">
+                <ion-select 
+                  [(ngModel)]="rutaSeleccionada"
+                  placeholder="Seleccionar ruta"
+                  interface="action-sheet"
+                  class="modern-select"
+                  (ionChange)="seleccionarRuta($event)">
+                  <ion-select-option *ngFor="let ruta of rutasGuardadas" [value]="ruta">
+                    <div class="select-option">
+                      <ion-icon name="trail-sign" color="primary"></ion-icon>
+                      <div class="option-text">
+                        <strong>{{ ruta.nombre_ruta }}</strong>
+                      </div>
+                    </div>
+                  </ion-select-option>
+                </ion-select>
+                <ion-icon name="chevron-down" class="select-arrow"></ion-icon>
+              </div>
+            </div>
+
+            <div class="config-item">
+              <label class="config-label">
+                <ion-icon name="car" color="primary"></ion-icon>
+                Vehículo
+              </label>
+              <div class="select-wrapper">
+                <ion-select 
+                  [(ngModel)]="vehiculoSeleccionado"
+                  placeholder="Seleccionar vehículo"
+                  interface="action-sheet"
+                  class="modern-select"
+                  (ionChange)="seleccionarVehiculo($event)">
+                  <ion-select-option *ngFor="let vehiculo of vehiculo" [value]="vehiculo">
+                    <div class="select-option">
+                      <ion-icon name="car-sport" color="primary"></ion-icon>
+                      <div class="option-text">
+                        <strong>{{ vehiculo.marca }}</strong>
+                        <small>{{ vehiculo.placa }}</small>
+                      </div>
+                    </div>
+                  </ion-select-option>
+                </ion-select>
+                <ion-icon name="chevron-down" class="select-arrow"></ion-icon>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="progress-stats">
-          <small>
-            <span *ngIf="modoOperacion === 'simulacion'">
-              Punto {{ indicePuntoActual + 1 }} de {{ puntosRutaActual.length }}
+
+        <div class="info-card" *ngIf="rutaSeleccionada">
+          <div class="section-header">
+            <ion-icon name="information-circle" color="primary"></ion-icon>
+            <h3>Información del Recorrido</h3>
+          </div>
+          
+          <div class="route-info">
+            <div class="route-main">
+              <div class="route-icon">
+                <ion-icon name="trail-sign" color="primary"></ion-icon>
+              </div>
+              <div class="route-details">
+                <h4>{{ rutaSeleccionada.nombre_ruta }}</h4>
+                <p class="route-meta">
+                  <span class="meta-item">
+                    <ion-icon name="location"></ion-icon>
+                    {{ puntosRutaActual?.length || 0 }} puntos
+                  </span>
+                  <span class="meta-item" *ngIf="vehiculoSeleccionado">
+                    <ion-icon name="car-sport"></ion-icon>
+                    {{ vehiculoSeleccionado.placa }}
+                  </span>
+                </p>
+              </div>
+            </div>
+            
+            <div class="progress-section">
+              <div class="progress-header">
+                <span>Progreso</span>
+                <span class="progress-percent">{{ progresoRuta.toFixed(1) }}%</span>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-bar">
+                  <div class="progress-fill" [style.width.%]="progresoRuta"></div>
+                </div>
+                <div class="progress-indicator" [style.left.%]="progresoRuta">
+                  <div class="indicator-dot"></div>
+                </div>
+              </div>
+              <div class="progress-stats">
+                <span *ngIf="modoOperacion === 'simulacion'">
+                  Punto {{ indicePuntoActual + 1 }} de {{ puntosRutaActual.length }}
+                </span>
+                <span *ngIf="modoOperacion === 'tiempo-real'">
+                  Seguimiento activo
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-card">
+          <ion-button 
+            class="main-action-btn"
+            [color]="modoRecorrido ? 'danger' : 'success'" 
+            (click)="toggleRecorridoMode()" 
+            [disabled]="!rutaSeleccionada"
+            expand="block"
+            shape="round"
+            size="large">
+            <div class="btn-content">
+              <div class="btn-icon">
+                <ion-icon 
+                  [name]="modoRecorrido ? 'stop-circle' : 'play-circle'"
+                  class="action-icon">
+                </ion-icon>
+              </div>
+              <div class="btn-text">
+                <span class="btn-title">
+                  {{ modoRecorrido ? 'DETENER' : 'INICIAR' }}
+                </span>
+                <span class="btn-subtitle">
+                  {{ modoOperacion === 'tiempo-real' ? 'TIEMPO REAL' : 'SIMULACIÓN' }}
+                </span>
+              </div>
+            </div>
+          </ion-button>
+
+          <div class="action-info" *ngIf="!rutaSeleccionada">
+            <ion-icon name="alert-circle" color="medium"></ion-icon>
+            <span>Selecciona una ruta y vehículo para comenzar</span>
+          </div>
+        </div>
+
+        <div class="status-card" *ngIf="modoRecorrido">
+          <div class="status-header">
+            <div class="live-indicator">
+              <div class="pulse-dot" [class]="modoOperacion === 'tiempo-real' ? 'real-pulse' : 'sim-pulse'"></div>
+              <ion-icon [name]="modoOperacion === 'tiempo-real' ? 'radio' : 'play-circle'"></ion-icon>
+              <span>RECORRIDO ACTIVO</span>
+            </div>
+            <div class="status-mode">
+              <ion-badge [color]="modoOperacion === 'tiempo-real' ? 'success' : 'warning'">
+                {{ modoOperacion === 'tiempo-real' ? 'REAL' : 'SIM' }}
+              </ion-badge>
+            </div>
+          </div>
+          
+          <div class="status-grid">
+            <div class="status-item">
+              <div class="status-icon">
+                <ion-icon name="speedometer" color="primary"></ion-icon>
+              </div>
+              <div class="status-text">
+                <label>Progreso</label>
+                <strong>{{ progresoRuta.toFixed(1) }}%</strong>
+              </div>
+            </div>
+            
+            <div class="status-item">
+              <div class="status-icon">
+                <ion-icon name="trail-sign" color="primary"></ion-icon>
+              </div>
+              <div class="status-text">
+                <label>Ruta</label>
+                <strong>{{ rutaSeleccionada?.nombre_ruta }}</strong>
+              </div>
+            </div>
+            
+            <div class="status-item">
+              <div class="status-icon">
+                <ion-icon name="car-sport" color="primary"></ion-icon>
+              </div>
+              <div class="status-text">
+                <label>Vehículo</label>
+                <strong>{{ vehiculoSeleccionado?.placa }}</strong>
+              </div>
+            </div>
+            
+            <div class="status-item">
+              <div class="status-icon">
+                <ion-icon name="time" color="primary"></ion-icon>
+              </div>
+              <div class="status-text">
+                <label>Estado</label>
+                <strong>{{ modoOperacion === 'tiempo-real' ? 'En movimiento' : 'Simulando' }}</strong>
+              </div>
+            </div>
+          </div>
+          
+          <div class="status-footer" [class]="modoOperacion === 'tiempo-real' ? 'real-time' : 'simulation'">
+            <ion-icon [name]="modoOperacion === 'tiempo-real' ? 'cellular' : 'play'"></ion-icon>
+            <span>
+              {{ modoOperacion === 'tiempo-real' ? 
+                'Enviando ubicación en tiempo real' : 
+                'Movimiento simulado activo' }}
             </span>
-            <span *ngIf="modoOperacion === 'tiempo-real'">
-            </span>
-            <span *ngIf="pruebaActiva" class="time-remaining">
-            </span>
-          </small>
+          </div>
         </div>
       </div>
-    </div>
+
+      <div class="scroll-spacer"></div>
+    </ion-content>
   </div>
-
-  <!-- Control Principal -->
-  <div class="section control-section">
-    <div class="action-container">
-      <ion-button 
-        class="main-action-button" 
-        [color]="modoRecorrido ? 'danger' : 'success'" 
-        (click)="toggleRecorridoMode()" 
-        [disabled]="!rutaSeleccionada"
-        expand="block"
-        shape="round"
-        size="large">
-        <ion-icon 
-          [name]="modoRecorrido ? 'stop-circle' : 'play-circle'" 
-          slot="start"
-          class="action-icon">
-        </ion-icon>
-        {{ modoRecorrido ? 'DETENER RECORRIDO' : 'INICIAR RECORRIDO' }}
-        <ion-spinner *ngIf="modoRecorrido" name="crescent" slot="end"></ion-spinner>
-      </ion-button>
-
-      <div class="action-info" *ngIf="!rutaSeleccionada">
-        <ion-icon name="information-circle" color="medium"></ion-icon>
-        <span style="font-size: 13px;">Selecciona una ruta y vehículo para comenzar</span>
-      </div>
-
-      <div class="mode-warning" *ngIf="rutaSeleccionada && !modoRecorrido">
-        <ion-icon 
-          [name]="modoOperacion === 'tiempo-real' ? 'radio' : 'play'" 
-          [color]="modoOperacion === 'tiempo-real' ? 'success' : 'warning'">
-        </ion-icon>
-        <span>
-          Modo <strong>{{ modoOperacion === 'tiempo-real' ? 'Tiempo Real' : 'Simulación' }}</strong> listo
-        </span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Estado del Recorrido (Solo cuando está activo) -->
-  <div class="section status-section" *ngIf="modoRecorrido">
-    <div class="status-card">
-      <div class="status-header">
-        <div class="status-indicator">
-          <div class="pulse-dot" [class.real-time]="modoOperacion === 'tiempo-real'" 
-                               [class.simulation]="modoOperacion === 'simulacion'"></div>
-          <ion-icon [name]="modoOperacion === 'tiempo-real' ? 'radio' : 'play'" 
-                   class="pulse-icon"></ion-icon>
-          <span>Recorrido en Progreso - {{ modoOperacion === 'tiempo-real' ? 'TIEMPO REAL' : 'SIMULACIÓN' }}</span>
-        </div>
-        <div class="status-time" *ngIf="pruebaActiva">
-          <ion-icon name="time"></ion-icon>
-        </div>
-      </div>
-
-      <div class="status-grid">
-        <div class="status-item">
-          <div class="status-icon" [class.real-time]="modoOperacion === 'tiempo-real'" 
-                                 [class.simulation]="modoOperacion === 'simulacion'">
-            <ion-icon name="trail-sign"></ion-icon>
-          </div>
-          <div class="status-details">
-            <label>Ruta Actual</label>
-            <strong>{{ rutaSeleccionada?.nombre_ruta }}</strong>
-          </div>
-        </div>
-
-        <div class="status-item">
-          <div class="status-icon" [class.real-time]="modoOperacion === 'tiempo-real'" 
-                                 [class.simulation]="modoOperacion === 'simulacion'">
-            <ion-icon name="location"></ion-icon>
-          </div>
-          <div class="status-details">
-            <label>Progreso</label>
-            <strong>{{ progresoRuta.toFixed(1) }}%</strong>
-          </div>
-        </div>
-
-        <div class="status-item">
-          <div class="status-icon" [class.real-time]="modoOperacion === 'tiempo-real'" 
-                                 [class.simulation]="modoOperacion === 'simulacion'">
-            <ion-icon name="car-sport"></ion-icon>
-          </div>
-          <div class="status-details">
-            <label>Vehículo</label>
-            <strong>{{ vehiculoSeleccionado?.marca }} - {{ vehiculoSeleccionado?.placa }}</strong>
-          </div>
-        </div>
-
-        <div class="status-item">
-          <div class="status-icon" [class.real-time]="modoOperacion === 'tiempo-real'" 
-                                 [class.simulation]="modoOperacion === 'simulacion'">
-            <ion-icon name="speedometer"></ion-icon>
-          </div>
-          <div class="status-details">
-            <label>Estado</label>
-            <strong [class]="modoOperacion === 'tiempo-real' ? 'status-real-time' : 'status-simulation'">
-              {{ modoOperacion === 'tiempo-real' ? 'En Movimiento Real' : 'Simulando' }}
-            </strong>
-          </div>
-        </div>
-      </div>
-
-      <!-- Información adicional según el modo -->
-      <div class="mode-specific-info">
-        <div *ngIf="modoOperacion === 'tiempo-real'" class="real-time-info">
-          <ion-icon name="cellular" color="success"></ion-icon>
-          <span>Enviando ubicación en tiempo real al servidor</span>
-        </div>
-        <div *ngIf="modoOperacion === 'simulacion'" class="simulation-info">
-          <ion-icon name="play" color="warning"></ion-icon>
-          <span>Simulando movimiento automático por la ruta</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Espacio final para mejor scroll -->
-  <div class="scroll-spacer"></div>
-</ion-content>
+</ion-app>

@@ -1,186 +1,705 @@
-// Variables reutilizables
-$primary-color: #3880ff;
-$success-color: #10b981;
-$danger-color: #ef4444;
-$text-dark: #1e293b;
-$text-light: #64748b;
-$border-color: #e2e8f0;
-$card-bg: white;
-$shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-
-// Mixins
-@mixin card-style {
-  background: $card-bg;
-  border-radius: 16px;
-  box-shadow: $shadow;
-  border: 1px solid $border-color;
+/* ===== VARIABLES Y MIXINS ===== */
+:root {
+  --primary-color: #4a6fff;
+  --success-color: #00c851;
+  --danger-color: #ff4444;
+  --warning-color: #ffbb33;
+  --dark-color: #1a1b27;
+  --light-color: #f8f9fa;
+  --gray-color: #6c757d;
+  --border-color: #e9ecef;
+  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@mixin flex-center {
+/* ===== ESTILOS BASE ===== */
+ion-content.content-custom {
+  --background: #f8f9fa;
+  --padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ===== HEADER MODERNO ===== */
+.header-custom {
+  ion-toolbar {
+    --background: var(--dark-color);
+    --color: white;
+    --border-color: transparent;
+    --min-height: 60px;
+  }
+}
+
+.header-content {
   display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex: 1;
 }
 
-// Header
-.header-custom {
-  .toolbar-gradient { --color: white; }
-  .title-custom {
-    font-weight: 600;
-    font-size: 1.1rem;
-    @include flex-center;
-    .title-icon {
-      margin-right: 8px;
-      font-size: 1.2rem;
-    }
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  
+  .header-icon {
+    font-size: 1.2rem;
+    color: var(--primary-color);
   }
 }
 
-.menu { color: white; }
-
-.content-custom {
-  --background: #f8fafc;
-  --padding-start: 16px;
-  --padding-end: 16px;
-  --padding-top: 8px;
+.live-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 12px;
+  animation: pulse 2s infinite;
 }
 
-// Secciones
-.section { margin-bottom: 24px; }
-
-// Selectores
-.selectores-section {
-  margin-top: 10px;
-  .selector-card {
-    @include card-style;
-    padding: 20px;
-    @include flex-center;
-    align-items: flex-start;
-    .selector-content {
-      flex: 1;
-      width: 100%;
-      .selector-label {
-        display: block;
-        font-weight: 600;
-        color: #475569;
-        margin-bottom: 8px;
-        font-size: 0.9rem;
-      }
-    }
+.notification-btn {
+  position: relative;
+  
+  .notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 0.6rem;
+    min-width: 18px;
+    height: 18px;
   }
 }
 
-// Mapa
-.mapa-container {
-  @include card-style;
+/* ===== SECCIÓN DEL MAPA ===== */
+.map-section {
+  position: relative;
+  height: 50vh;
+  margin: 0;
   overflow: hidden;
-  margin-bottom: 20px;
-  .mapa { height: 40vh !important; }
+  
+  .map-container {
+    width: 100%;
+    height: 100%;
+    border-radius: 0 0 24px 24px;
+  }
 }
 
-// Info Section
-.info-section {
-  .info-card {
-    @include card-style;
-    padding: 20px;
-    .info-header {
-      @include flex-center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-      .route-badge, .vehicle-badge {
-        @include flex-center;
-        background: #f1f5f9;
-        padding: 8px 12px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 500;
-        color: #475569;
-        ion-icon { margin-right: 6px; font-size: 0.9rem; }
+.map-overlay-controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1000;
+}
+
+.map-btn {
+  --border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  --box-shadow: var(--card-shadow);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.9);
+  
+  ion-icon {
+    font-size: 1.2rem;
+  }
+}
+
+.locate-btn {
+  --background: var(--primary-color);
+  --color: white;
+}
+
+.layers-btn {
+  --background: white;
+  --color: var(--dark-color);
+}
+
+/* ===== PANEL DE CONTROL ===== */
+.control-panel {
+  background: white;
+  border-radius: 24px 24px 0 0;
+  margin-top: -20px;
+  position: relative;
+  z-index: 10;
+  padding: 24px 20px;
+  box-shadow: var(--card-shadow);
+}
+
+/* ===== TARJETAS ===== */
+.mode-selector-card,
+.config-card,
+.info-card,
+.action-card,
+.status-card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  transition: var(--transition);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--dark-color);
+  }
+  
+  ion-icon {
+    font-size: 1.2rem;
+  }
+}
+
+/* ===== SELECTOR DE MODO ===== */
+/* ===== SELECTOR DE MODO CORREGIDO ===== */
+.mode-segment {
+  --background: #f8f9fa;
+  border-radius: 16px;
+  padding: 4px;
+  margin-bottom: 16px;
+}
+
+.mode-option {
+  --border-radius: 12px;
+  --background-checked: white; /* Fondo blanco cuando está seleccionado */
+  --color-checked: var(--primary-color); /* Texto azul cuando está seleccionado */
+  --color: var(--gray-color); /* Texto gris cuando no está seleccionado */
+  --indicator-color: var(--primary-color); /* Línea indicadora */
+  --border-color: transparent;
+  --border-width: 2px;
+  min-height: 48px;
+  transition: var(--transition);
+  border: 2px solid transparent;
+  
+  /* Texto e iconos */
+  ion-icon {
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+    transition: var(--transition);
+  }
+  
+  ion-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  
+  /* Estado seleccionado */
+  &.segment-button-checked {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(74, 111, 255, 0.15);
+    
+    ion-icon {
+      color: var(--primary-color);
+    }
+    
+    ion-label {
+      color: var(--primary-color);
+    }
+  }
+  
+  /* Estado hover */
+  &:hover:not(.segment-button-checked) {
+    --background: rgba(74, 111, 255, 0.05);
+    border-color: rgba(74, 111, 255, 0.2);
+  }
+}
+
+/* Para modo tiempo real seleccionado */
+.mode-option[value="tiempo-real"].segment-button-checked {
+  ion-icon {
+    color: var(--success-color);
+  }
+  
+  ion-label {
+    color: var(--success-color);
+  }
+  
+  &::part(indicator) {
+    background: var(--success-color);
+  }
+}
+
+/* Para modo simulación seleccionado */
+.mode-option[value="simulacion"].segment-button-checked {
+  ion-icon {
+    color: var(--warning-color);
+  }
+  
+  ion-label {
+    color: var(--warning-color);
+  }
+  
+  &::part(indicator) {
+    background: var(--warning-color);
+  }
+}
+
+/* Descripción del modo con colores específicos */
+.mode-description {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-top: 12px;
+  
+  p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--gray-color);
+    
+    ion-icon {
+      font-size: 1rem;
+    }
+  }
+  
+  /* Color específico según el modo */
+  &.tiempo-real {
+    background: rgba(0, 200, 81, 0.05);
+    border-left: 3px solid var(--success-color);
+    
+    p {
+      color: #006400;
+      
+      ion-icon {
+        color: var(--success-color);
       }
     }
-    .route-name {
-      margin: 0 0 8px 0;
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: $text-dark;
+  }
+  
+  &.simulacion {
+    background: rgba(255, 187, 51, 0.05);
+    border-left: 3px solid var(--warning-color);
+    
+    p {
+      color: #856404;
+      
+      ion-icon {
+        color: var(--warning-color);
+      }
     }
-    .route-description {
-      margin: 0;
-      color: $text-light;
+  }
+}
+
+/* ===== INFORMACIÓN DEL RECORRIDO ===== */
+.route-info {
+  .route-main {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    
+    .route-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(74, 111, 255, 0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      ion-icon {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+      }
+    }
+    
+    .route-details {
+      flex: 1;
+      
+      h4 {
+        margin: 0 0 4px 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--dark-color);
+      }
+      
+      .route-meta {
+        display: flex;
+        gap: 16px;
+        margin: 0;
+        
+        .meta-item {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 0.85rem;
+          color: var(--gray-color);
+          
+          ion-icon {
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* ===== BARRA DE PROGRESO ===== */
+.progress-section {
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    
+    span {
       font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--dark-color);
     }
-  }
-}
-
-// Control Section
-.control-section {
-  .action-container {
-    @include card-style;
-    padding: 24px 20px;
-    text-align: center;
-    .main-action-button {
-      --border-radius: 16px;
-      --padding-top: 24px;
-      --padding-bottom: 24px;
+    
+    .progress-percent {
+      font-size: 1rem;
       font-weight: 700;
-      font-size: 1.1rem;
-      margin-bottom: 12px;
-      &[color="success"] { box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); }
-      &[color="danger"] { box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4); }
+      color: var(--primary-color);
     }
   }
 }
 
-// Status Section
-.status-section {
-  .status-card {
-    background: linear-gradient(135deg, #fffbeb, #fed7aa);
-    border-radius: 16px;
-    padding: 20px;
-    border: 1px solid #fdba74;
-    .status-header {
-      @include flex-center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(251, 146, 60, 0.3);
+.progress-bar-container {
+  position: relative;
+  margin: 12px 0;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #f0f2f5;
+  border-radius: 4px;
+  overflow: hidden;
+  
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), #6a8cff);
+    border-radius: 4px;
+    transition: width 0.6s ease;
+  }
+}
+
+.progress-indicator {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: left 0.6s ease;
+  
+  .indicator-dot {
+    width: 20px;
+    height: 20px;
+    background: white;
+    border: 3px solid var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(74, 111, 255, 0.3);
+  }
+}
+
+.progress-stats {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--gray-color);
+  margin-top: 8px;
+}
+
+/* ===== BOTÓN DE ACCIÓN PRINCIPAL ===== */
+.main-action-btn {
+  --border-radius: 16px;
+  --padding-top: 24px;
+  --padding-bottom: 24px;
+  --box-shadow: var(--card-shadow);
+  height: 80px;
+  margin: 0;
+  
+  &[color="success"] {
+    --background: linear-gradient(135deg, var(--success-color), #00a344);
+    --background-activated: #00a344;
+  }
+  
+  &[color="danger"] {
+    --background: linear-gradient(135deg, var(--danger-color), #cc0000);
+    --background-activated: #cc0000;
+  }
+}
+
+.btn-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.btn-icon {
+  .action-icon {
+    font-size: 2rem;
+  }
+}
+
+.btn-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  
+  .btn-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  
+  .btn-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    font-weight: 500;
+  }
+}
+
+.action-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  color: var(--gray-color);
+  
+  ion-icon {
+    font-size: 1.1rem;
+  }
+}
+
+/* ===== TARJETA DE ESTADO ===== */
+.status-card {
+  border-left: 4px solid var(--primary-color);
+}
+
+.status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--dark-color);
+  
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+  
+  .real-pulse {
+    background: var(--success-color);
+  }
+  
+  .sim-pulse {
+    background: var(--warning-color);
+  }
+}
+
+.status-mode {
+  ion-badge {
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 10px;
+  }
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  .status-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(74, 111, 255, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    ion-icon {
+      font-size: 1.2rem;
+      color: var(--primary-color);
     }
-    .status-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+  }
+  
+  .status-text {
+    display: flex;
+    flex-direction: column;
+    
+    label {
+      font-size: 0.8rem;
+      color: var(--gray-color);
+      margin-bottom: 2px;
+    }
+    
+    strong {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--dark-color);
     }
   }
 }
 
-// Menu Styles (Mantén solo los esenciales)
-.menu-button {
-  --padding-start: 8px;
-  --padding-end: 8px;
-  --background: transparent;
-  ion-icon { font-size: 24px; }
+.status-footer {
+  margin-top: 20px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  
+  &.real-time {
+    background: rgba(0, 200, 81, 0.1);
+    color: var(--success-color);
+  }
+  
+  &.simulation {
+    background: rgba(255, 187, 51, 0.1);
+    color: var(--warning-color);
+  }
 }
 
-ion-menu {
-  --width: 280px;
-  --min-width: 280px;
-  ion-content { --background: #f8f9fa; }
-  ion-list { background: transparent; padding: 8px 0; }
+/* ===== MENÚ ===== */
+.menu-item {
+  --padding-start: 20px;
+  --padding-end: 20px;
+  --min-height: 60px;
+  --border-radius: 12px;
+  margin: 8px 16px;
+  
+  ion-icon {
+    font-size: 1.2rem;
+  }
 }
 
-// Animaciones (solo las necesarias)
+/* ===== ANIMACIONES ===== */
 @keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.2); opacity: 0.7; }
-}
-
-// Responsive
-@media (max-width: 480px) {
-  .content-custom {
-    --padding-start: 12px;
-    --padding-end: 12px;
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
   }
-  .status-grid { grid-template-columns: 1fr !important; }
-  .mapa { height: 50vh !important; }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
 }
 
-.scroll-spacer { height: 40px; }
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  .control-panel {
+    padding: 20px 16px;
+  }
+  
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .map-section {
+    height: 45vh;
+  }
+  
+  .main-action-btn {
+    height: 70px;
+    
+    .btn-title {
+      font-size: 1.1rem;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .control-panel {
+    max-width: 600px;
+    margin: -20px auto 0;
+    border-radius: 24px;
+  }
+  
+  .map-section {
+    height: 55vh;
+  }
+}
+
+/* Modo oscuro */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --dark-color: #2d3047;
+    --light-color: #1a1b27;
+    --border-color: #3a3b52;
+  }
+  
+  ion-content.content-custom {
+    --background: var(--light-color);
+  }
+  
+  .control-panel,
+  .mode-selector-card,
+  .config-card,
+  .info-card,
+  .action-card,
+  .status-card {
+    background: var(--dark-color);
+    border-color: var(--border-color);
+  }
+  
+  .section-header h3,
+  .config-label,
+  .route-details h4,
+  .progress-header span,
+  .status-text strong {
+    color: white;
+  }
+  
+  .modern-select,
+  .mode-description,
+  .action-info {
+    background: var(--light-color);
+    border-color: var(--border-color);
+    color: #adb5bd;
+  }
+  
+  .map-btn {
+    background: rgba(45, 48, 71, 0.9);
+  }
+}
+
+.scroll-spacer {
+  height: 40px;
+}
