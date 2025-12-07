@@ -132,7 +132,7 @@ interface Posicion {
     FormsModule,
     IonMenu,
     IonMenuToggle,
-    IonMenuButton, MenuComponent],
+    IonMenuButton, MenuComponent,],
 })
 export class HomeConductorPage implements OnInit, OnDestroy {
   private mapaCentrado: boolean = false;
@@ -1014,28 +1014,43 @@ private async sendToExternalAPI(location: any): Promise<any> {
     }
   }
 
-  private async detenerRecorrido() {
-    // Detener según el modo actual
-    if (this.modoOperacion === 'tiempo-real') {
-      this.stopLocationTracking();
-    } else {
-      this.stopSimulation();
-    }
-
-    // Detener temporizador de prueba
-    this.detenerTemporizadorPrueba();
-
-    // Limpiar variables
-    this.recorridoId = null;
-    this.modoRecorrido = false;
-    this.lastSentLocation = null;
-    this.rutaCompletada = false;
-    this.progresoRuta = 0;
-    this.distanciaAlFinal = 0;
-
-    console.log("🛑 Recorrido detenido completamente");
-    this.finalizarPorCompletarRuta();
+ private async detenerRecorrido() {
+  console.log("🛑 Iniciando detención del recorrido...");
+  
+  // 1. Detener según el modo actual
+  if (this.modoOperacion === 'tiempo-real') {
+    this.stopLocationTracking();
+  } else {
+    this.stopSimulation();
   }
+
+  // 2. Detener temporizador de prueba
+  this.detenerTemporizadorPrueba();
+
+  // 3. Limpiar variables locales
+  this.modoRecorrido = false;
+  this.lastSentLocation = null;
+  this.rutaCompletada = false;
+  this.progresoRuta = 0;
+  this.distanciaAlFinal = 0;
+  this.indicePuntoActual = 0;
+  this.recorridoPuntos = [];
+  
+  // 4. Limpiar el recorrido dibujado
+  if (this.routeLayer) {
+    this.routeLayer.getSource().clear();
+  }
+  
+  // 5. Limpiar posición del carro (opcional)
+  if (this.carFeature) {
+    this.carFeature.setGeometry(null);
+  }
+
+  console.log("✅ Recorrido detenido localmente");
+  
+  // 6. NO llamar a this.finRecorrido() aquí
+  // Eso se hará en toggleRecorridoMode()
+}
 
   // ==================== MÉTODOS DEL MAPA ====================
 
@@ -1208,30 +1223,41 @@ private async sendToExternalAPI(location: any): Promise<any> {
       );
     }
   }
-   async seleccionarVehiculo(event: any) {
-    this.vehiculoId = event.detail.value;
-      this.vehiculoSeleccionado = this.vehiculo.find(v => v.id === this.vehiculoId);
-    console.log("🚗 Vehículo seleccionado para el recorrido:", this.vehiculoId);
-  }
-
-  async seleccionarRuta(event: any) {
-  const rutaId = event.detail.value;
-  this.rutaSeleccionada =
-    this.rutasGuardadas.find((ruta) => ruta.id === rutaId) || null;
-
-  if (this.rutaSeleccionada) {
-    console.log(
-      "🛣️ Ruta seleccionada para recorrido:",
-      this.rutaSeleccionada.nombre_ruta
-    );
-    // ✅ FALTA ESTA LÍNEA - AGREGALA
-    this.cargarPuntosRuta(this.rutaSeleccionada);
+async seleccionarVehiculo(event: any) {
+  const vehiculoSeleccionado = event.detail.value;
+  
+  console.log("🚗 Vehículo seleccionado:", vehiculoSeleccionado);
+  
+  if (vehiculoSeleccionado && typeof vehiculoSeleccionado === 'object') {
+    this.vehiculoSeleccionado = vehiculoSeleccionado;
+    this.vehiculoId = vehiculoSeleccionado.id;  // ✅ Esto es lo que falta
+    
+    console.log("✅ ID del vehículo establecido:", this.vehiculoId);
+    console.log("✅ Vehículo seleccionado:", this.vehiculoSeleccionado.marca, this.vehiculoSeleccionado.placa);
   } else {
-    console.warn("⚠️ Ruta no encontrada para el ID seleccionado:", rutaId);
-    this.puntosRutaActual = [];
+    console.warn("⚠️ Vehículo no válido seleccionado:", vehiculoSeleccionado);
+    this.vehiculoSeleccionado = null;
+    this.vehiculoId = "";
   }
 }
 
+async seleccionarRuta(event: any) {
+  // event.detail.value YA es el objeto ruta completo
+  const rutaSeleccionada = event.detail.value;
+  
+  console.log("🛣️ Ruta seleccionada para recorrido:", rutaSeleccionada);
+  
+  if (rutaSeleccionada && typeof rutaSeleccionada === 'object') {
+    this.rutaSeleccionada = rutaSeleccionada;
+    if (this.rutaSeleccionada) {
+      this.cargarPuntosRuta(this.rutaSeleccionada);
+    }
+  } else {
+    console.warn("⚠️ Ruta no válida seleccionada:", rutaSeleccionada);
+    this.rutaSeleccionada = null;
+    this.puntosRutaActual = [];
+  }
+}
   private cargarPuntosRuta(ruta: Rutas) {
   try {
     const shapeObj = JSON.parse(ruta.shape);
@@ -1259,34 +1285,69 @@ private async sendToExternalAPI(location: any): Promise<any> {
     console.error("❌ Error cargando puntos de ruta:", error);
   }
 }
-  async toggleRecorridoMode() {
+ async toggleRecorridoMode() {
   if (!this.rutaSeleccionada) {
-    await this.mostrarAlerta(
-      "Error",
-      "Por favor selecciona una ruta primero"
-    );
+    await this.mostrarAlerta("Error", "Por favor selecciona una ruta primero");
     return;
   }
 
   if (!this.vehiculoId) {
-    await this.mostrarAlerta(
-      "Error",
-      "Por favor selecciona un vehículo primero"
-    );
+    await this.mostrarAlerta("Error", "Por favor selecciona un vehículo primero");
     return;
   }
 
   this.modoRecorrido = !this.modoRecorrido;
 
   if (this.modoRecorrido) {
-    console.log(
-      `🚗 Iniciando recorrido en modo ${this.modoOperacion.toUpperCase()}:`,
-      this.rutaSeleccionada.nombre_ruta
-    );
+    console.log(`🚗 Iniciando recorrido en modo ${this.modoOperacion.toUpperCase()}:`, this.rutaSeleccionada.nombre_ruta);
     await this.iniciarRecorridoRuta();
   } else {
-    console.log("🚗 Deteniendo recorrido");
-    await this.detenerRecorrido();
+    console.log("🚗 Deteniendo recorrido...");
+    
+    // Mostrar confirmación
+    const confirm = await this.alertController.create({
+      header: '¿Detener Recorrido?',
+      message: '¿Estás seguro que deseas finalizar el recorrido?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          handler: () => {
+            // Si cancela, mantener el modoRecorrido en true
+            this.modoRecorrido = true;
+          }
+        },
+        {
+          text: 'Sí, Detener',
+          handler: async () => {
+            try {
+              // 1. Detener localmente
+              await this.detenerRecorrido();
+              
+              // 2. Finalizar en el servidor
+              await this.finRecorrido();
+              
+              console.log("✅ Recorrido detenido y finalizado correctamente");
+              
+              // 3. Mostrar mensaje de éxito
+              await this.mostrarAlerta(
+                'Recorrido Finalizado',
+                'El recorrido se ha detenido correctamente y se ha registrado en el servidor.'
+              );
+              
+            } catch (error) {
+              console.error('❌ Error al detener recorrido:', error);
+              await this.mostrarAlerta(
+                'Error',
+                'Hubo un problema al finalizar el recorrido. Intenta nuevamente.'
+              );
+            }
+          }
+        }
+      ]
+    });
+    
+    await confirm.present();
   }
 }
     async obtenerVehiculos() {

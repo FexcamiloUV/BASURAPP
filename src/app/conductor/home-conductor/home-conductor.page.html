@@ -2,16 +2,16 @@
 
   <!-- CONTENIDO PRINCIPAL CON EL ID QUE COINCIDE -->
   <div id="main-content">
-    
+
     <ion-header [translucent]="true" class="header-custom">
       <ion-toolbar color="primary">
-        
+
         <!-- BOTÓN PARA ABRIR EL MENÚ -->
         <ion-buttons slot="start">
-        <ion-button fill="clear" slot="start" (click)="logout()">
-          <ion-icon slot="start" name="log-out"></ion-icon>
-        </ion-button>
-          </ion-buttons>
+          <ion-button fill="clear" slot="start" (click)="logout()">
+            <ion-icon slot="start" name="log-out"></ion-icon>
+          </ion-button>
+        </ion-buttons>
 
         <div class="header-content">
           <div class="header-title">
@@ -25,7 +25,7 @@
             </ion-badge>
           </div>
         </div>
-        
+
         <ion-buttons slot="end">
           <ion-button class="notification-btn">
             <ion-icon name="notifications" color="light"></ion-icon>
@@ -51,7 +51,7 @@
             <ion-icon name="options" color="primary"></ion-icon>
             <h3>Modo de Operación</h3>
           </div>
-          
+
           <ion-segment [value]="modoOperacion" (ionChange)="cambiarModoOperacion($event)" class="mode-segment">
             <ion-segment-button value="tiempo-real" class="mode-option">
               <ion-icon name="radio"></ion-icon>
@@ -62,14 +62,14 @@
               <ion-label>Simulación</ion-label>
             </ion-segment-button>
           </ion-segment>
-          
+
           <div class="mode-description">
             <p>
-              <ion-icon [name]="modoOperacion === 'tiempo-real' ? 'radio' : 'play-circle'" 
-                      [color]="modoOperacion === 'tiempo-real' ? 'success' : 'warning'"></ion-icon>
-              {{ modoOperacion === 'tiempo-real' ? 
-                'Usando GPS real para seguimiento en tiempo real' : 
-                'Movimiento simulado para pruebas y demostraciones' }}
+              <ion-icon [name]="modoOperacion === 'tiempo-real' ? 'radio' : 'play-circle'"
+                [color]="modoOperacion === 'tiempo-real' ? 'success' : 'warning'"></ion-icon>
+              {{ modoOperacion === 'tiempo-real' ?
+              'Usando GPS real para seguimiento en tiempo real' :
+              'Movimiento simulado para pruebas y demostraciones' }}
             </p>
           </div>
         </div>
@@ -79,7 +79,7 @@
             <ion-icon name="settings" color="primary"></ion-icon>
             <h3>Configuración del Recorrido</h3>
           </div>
-          
+
           <div class="config-grid">
             <div class="config-item">
               <label class="config-label">
@@ -87,12 +87,8 @@
                 Ruta
               </label>
               <div class="select-wrapper">
-                <ion-select 
-                  [(ngModel)]="rutaSeleccionada"
-                  placeholder="Seleccionar ruta"
-                  interface="action-sheet"
-                  class="modern-select"
-                  (ionChange)="seleccionarRuta($event)">
+                <ion-select [(ngModel)]="rutaSeleccionada" placeholder="Seleccionar ruta" interface="action-sheet"
+                  class="modern-select" (ionChange)="seleccionarRuta($event)">
                   <ion-select-option *ngFor="let ruta of rutasGuardadas" [value]="ruta">
                     <div class="select-option">
                       <ion-icon name="trail-sign" color="primary"></ion-icon>
@@ -112,12 +108,8 @@
                 Vehículo
               </label>
               <div class="select-wrapper">
-                <ion-select 
-                  [(ngModel)]="vehiculoSeleccionado"
-                  placeholder="Seleccionar vehículo"
-                  interface="action-sheet"
-                  class="modern-select"
-                  (ionChange)="seleccionarVehiculo($event)">
+                <ion-select [(ngModel)]="vehiculoSeleccionado" placeholder="Seleccionar vehículo"
+                  interface="action-sheet" class="modern-select" (ionChange)="seleccionarVehiculo($event)">
                   <ion-select-option *ngFor="let vehiculo of vehiculo" [value]="vehiculo">
                     <div class="select-option">
                       <ion-icon name="car-sport" color="primary"></ion-icon>
@@ -139,7 +131,7 @@
             <ion-icon name="information-circle" color="primary"></ion-icon>
             <h3>Información del Recorrido</h3>
           </div>
-          
+
           <div class="route-info">
             <div class="route-main">
               <div class="route-icon">
@@ -159,7 +151,7 @@
                 </p>
               </div>
             </div>
-            
+
             <div class="progress-section">
               <div class="progress-header">
                 <span>Progreso</span>
@@ -186,27 +178,20 @@
         </div>
 
         <div class="action-card">
-          <ion-button 
-            class="main-action-btn"
-            [color]="modoRecorrido ? 'danger' : 'success'" 
-            (click)="toggleRecorridoMode()" 
-            [disabled]="!rutaSeleccionada"
-            expand="block"
-            shape="round"
-            size="large">
+          <ion-button class="main-action-btn" [color]="modoRecorrido ? 'danger' : 'success'"
+            (click)="toggleRecorridoMode()" [disabled]="!rutaSeleccionada || !vehiculoSeleccionado" expand="block"
+            shape="round" size="large">
             <div class="btn-content">
               <div class="btn-icon">
-                <ion-icon 
-                  [name]="modoRecorrido ? 'stop-circle' : 'play-circle'"
-                  class="action-icon">
+                <ion-icon [name]="modoRecorrido ? 'stop-circle' : 'play-circle'" class="action-icon">
                 </ion-icon>
               </div>
               <div class="btn-text">
                 <span class="btn-title">
-                  {{ modoRecorrido ? 'DETENER' : 'INICIAR' }}
+                  {{ modoRecorrido ? 'DETENER RECORRIDO' : 'INICIAR RECORRIDO' }}
                 </span>
                 <span class="btn-subtitle">
-                  {{ modoOperacion === 'tiempo-real' ? 'TIEMPO REAL' : 'SIMULACIÓN' }}
+                  {{ modoOperacion === 'tiempo-real' ? 'GPS EN VIVO' : 'SIMULACIÓN' }}
                 </span>
               </div>
             </div>
@@ -231,7 +216,7 @@
               </ion-badge>
             </div>
           </div>
-          
+
           <div class="status-grid">
             <div class="status-item">
               <div class="status-icon">
@@ -242,7 +227,7 @@
                 <strong>{{ progresoRuta.toFixed(1) }}%</strong>
               </div>
             </div>
-            
+
             <div class="status-item">
               <div class="status-icon">
                 <ion-icon name="trail-sign" color="primary"></ion-icon>
@@ -252,7 +237,7 @@
                 <strong>{{ rutaSeleccionada?.nombre_ruta }}</strong>
               </div>
             </div>
-            
+
             <div class="status-item">
               <div class="status-icon">
                 <ion-icon name="car-sport" color="primary"></ion-icon>
@@ -262,7 +247,7 @@
                 <strong>{{ vehiculoSeleccionado?.placa }}</strong>
               </div>
             </div>
-            
+
             <div class="status-item">
               <div class="status-icon">
                 <ion-icon name="time" color="primary"></ion-icon>
@@ -273,13 +258,13 @@
               </div>
             </div>
           </div>
-          
+
           <div class="status-footer" [class]="modoOperacion === 'tiempo-real' ? 'real-time' : 'simulation'">
             <ion-icon [name]="modoOperacion === 'tiempo-real' ? 'cellular' : 'play'"></ion-icon>
             <span>
-              {{ modoOperacion === 'tiempo-real' ? 
-                'Enviando ubicación en tiempo real' : 
-                'Movimiento simulado activo' }}
+              {{ modoOperacion === 'tiempo-real' ?
+              'Enviando ubicación en tiempo real' :
+              'Movimiento simulado activo' }}
             </span>
           </div>
         </div>
